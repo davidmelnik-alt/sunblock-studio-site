@@ -108,8 +108,11 @@ void main(){
   float d = length(p);
   float ang = atan(p.y, p.x);
 
-  // boiling limb — wobbles harder as uBreak rises
-  float wob = fbm(vec2(ang * 2.4 + 9., t * .22)) - .5;
+  // boiling limb — wobbles harder as uBreak rises.
+  // noise is sampled on a circle (not raw angle) so there is no
+  // visible seam where atan2 wraps at the sun's left edge
+  vec2 circ = vec2(cos(ang), sin(ang));
+  float wob = fbm(circ * 1.9 + 9. + vec2(t * .1, -t * .13)) - .5;
   float r = uSunR * (1. + wob * (.05 + uBreak * .14));
   float rr = max(r, .04); // falloff reference
 
@@ -123,7 +126,7 @@ void main(){
   // outer glow / corona — falloff scaled to the sun's size
   float out_ = max(d - r, 0.);
   float glow = exp(-out_ / (rr * .45));
-  float flame = fbm(vec2(ang * 3., t * .35 + d * 3.)) * exp(-out_ / (rr * (.22 + uBreak * .5)));
+  float flame = fbm(circ * 2.6 + vec2(t * .18, d * 3. - t * .27)) * exp(-out_ / (rr * (.22 + uBreak * .5)));
   col += body * glow * .55;
   col += mix(body, core, .5) * flame * (.5 + uBreak * .8);
 
@@ -603,16 +606,26 @@ function resize() {
 }
 
 const t0 = performance.now();
-let lastNow = t0, prevEased = 0, snapLeft = 0;
+let lastNow = t0, snapLeft = 0;
 function frame(now) {
   const time = (now - t0) / 1000;
-  const dt = Math.min((now - lastNow) / 1000, 1);
+  const dt = (now - lastNow) / 1000;
   lastNow = now;
-  // frame-rate independent catch-up (≈.09/frame at 60fps)
-  eased += (scrollY - eased) * (reduced ? 1 : 1 - Math.pow(0.9965, dt * 1700));
-  if (Math.abs(eased - prevEased) > vh * .6) snapLeft = 30;
-  else if (snapLeft > 0) snapLeft--;
-  prevEased = eased;
+  const gap = scrollY - eased;
+  if (reduced) {
+    eased = scrollY;
+  } else if (Math.abs(gap) > vh * 1.2) {
+    // teleport (anchor jump / scrollbar yank): land instantly,
+    // let the particles converge hard for a few frames
+    eased = scrollY;
+    snapLeft = 30;
+  } else {
+    // frame-rate independent catch-up (≈.09/frame at 60fps).
+    // dt is capped so a one-off frame hitch nudges the playhead
+    // instead of lurching the sun across the screen
+    eased += gap * (1 - Math.pow(0.9965, Math.min(dt, .1) * 1700));
+    if (snapLeft > 0) snapLeft--;
+  }
   updateProgress();
   const V = computeVisual();
   V.snap = snapLeft > 0;
