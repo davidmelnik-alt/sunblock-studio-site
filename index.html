@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sunblock Studio — Websites Built to Bring You Business</title>
+  <meta name="description" content="Sunblock Studio builds cinematic, conversion-first websites for real businesses. Designed, built, and live in seven days.">
+  <meta property="og:title" content="Sunblock Studio">
+  <meta property="og:description" content="Websites built to bring you business. Live in seven days.">
+  <meta property="og:url" content="https://sunblockstudio.com">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='28' fill='%23ffb24d'/%3E%3Ccircle cx='50' cy='50' r='42' fill='none' stroke='%23ffb24d' stroke-width='3' stroke-dasharray='8 10'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=Space+Grotesk:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ============ THE FILM : full-screen generative canvases ============ -->
+  <canvas id="gl" aria-hidden="true"></canvas>
+  <canvas id="net" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="cursor" aria-hidden="true"></div>
+
+  <!-- ============ LOADER ============ -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader-sun"></div>
+    <div class="loader-word">SUNBLOCK&nbsp;STUDIO</div>
+  </div>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <a class="nav-logo" href="#hero" data-jump>
+      <span class="nav-sun" aria-hidden="true"></span>
+      <span>SUNBLOCK<em>STUDIO</em></span>
+    </a>
+    <nav class="nav-links">
+      <a href="#factory" data-jump>Factory</a>
+      <a href="#days" data-jump>Process</a>
+      <a href="#team" data-jump>Team</a>
+      <a href="#pricing" data-jump>Plans</a>
+    </nav>
+    <a class="btn btn-small magnetic" href="mailto:hello@sunblockstudio.com">Start in 7 days</a>
+  </header>
+
+  <main id="film">
+
+    <!-- ============ SCENE 01 · THE SUN ============ -->
+    <section class="scene" id="hero" data-scene="hero" style="--h:220">
+      <div class="pin">
+        <div class="hero-inner">
+          <p class="eyebrow reveal">☀&ensp;WEB STUDIO — MIAMI, FLORIDA</p>
+          <h1 class="hero-title">
+            <span class="line"><span>Built to bring</span></span>
+            <span class="line"><span>you <em>business.</em></span></span>
+          </h1>
+          <p class="hero-sub reveal">Cinematic, conversion-first websites for real businesses.<br>
+          Designed, built, and live in <strong>seven days</strong>.</p>
+          <div class="hero-cta reveal">
+            <a class="btn btn-solar magnetic" href="#pricing" data-jump>Start your build</a>
+            <a class="btn btn-ghost magnetic" href="#factory" data-jump>How it works</a>
+          </div>
+        </div>
+        <div class="scroll-cue">
+          <span class="scroll-cue-line"></span>
+          <span class="scroll-cue-txt">SCROLL — THE SCREEN IS THE FILM</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SCENE 02 · THE SIGNAL ============ -->
+    <section class="scene" id="signal" data-scene="signal" style="--h:300">
+      <div class="pin">
+        <div class="beat" data-beat="0">
+          <p class="beat-kicker">01 / THE TRUTH</p>
+          <h2>Every customer you'll<br>ever get sees your<br><em>website first.</em></h2>
+        </div>
+        <div class="beat" data-beat="1">
+          <p class="beat-kicker">02 / THE WINDOW</p>
+          <h2><em>Five seconds.</em><br>That's how long<br>they give you.</h2>
+        </div>
+        <div class="beat" data-beat="2">
+          <p class="beat-kicker">03 / THE FIX</p>
+          <h2>Most sites weren't built<br>for that fight.<br><em>Ours are.</em></h2>
+          <div class="beat-chips">
+            <span class="chip">Loads instantly</span>
+            <span class="chip">Looks expensive</span>
+            <span class="chip">Makes the phone ring</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SCENE 03 · THE FACTORY ============ -->
+    <section class="scene" id="factory" data-scene="factory" style="--h:320">
+      <div class="pin">
+        <div class="factory-grid">
+          <div class="factory-copy">
+            <p class="eyebrow">⚙&ensp;OUR UNFAIR ADVANTAGE</p>
+            <h2 class="display">The Website<br><em>Factory.</em></h2>
+            <p class="lede">Our in-house build engine researches your business, pulls your photos and
+              reviews, and assembles a real working draft — while other agencies are still
+              scheduling a kickoff call.</p>
+            <ul class="factory-feats">
+              <li data-feat="0"><b>It studies you.</b> Your brand, your reviews, your customers — mapped automatically.</li>
+              <li data-feat="1"><b>It builds overnight.</b> A complete multi-page draft, not a mood board.</li>
+              <li data-feat="2"><b>Then the studio takes over.</b> Our designers, writers, and reviewers rework every word and pixel by hand.</li>
+            </ul>
+          </div>
+          <div class="terminal" id="terminal">
+            <div class="terminal-bar">
+              <span class="tdot td-r"></span><span class="tdot td-y"></span><span class="tdot td-g"></span>
+              <span class="terminal-title">sunblock — factory v2.1</span>
+            </div>
+            <pre class="terminal-body" id="termBody"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SCENE 04 · SEVEN DAYS ============ -->
+    <section class="scene" id="days" data-scene="days" style="--h:560">
+      <div class="pin pin-clip">
+        <div class="days-head">
+          <p class="eyebrow">⏱&ensp;THE SPRINT</p>
+          <div class="days-meter"><span id="daysMeterFill"></span></div>
+          <p class="days-count mono">DAY <b id="dayNum">01</b> / 07</p>
+        </div>
+        <div class="days-track" id="daysTrack">
+          <article class="day-card day-intro">
+            <h2 class="display">Idea to live site<br>in <em>seven days.</em></h2>
+            <p class="lede">No six-month agency saga. No disappearing freelancer.<br>A countdown, not a maybe. →</p>
+          </article>
+          <article class="day-card"><span class="day-num">01</span><h3>Kickoff</h3><p>You say go. We take your deposit, your story, and your best photos. That's all we need from you today.</p></article>
+          <article class="day-card"><span class="day-num">02</span><h3>The Factory runs</h3><p>Our build engine assembles the bones of your site overnight while our designers map your brand.</p></article>
+          <article class="day-card"><span class="day-num">03</span><h3>First draft — live</h3><p>You get a real link to a real working site. Not a sketch. Click it on your phone.</p></article>
+          <article class="day-card"><span class="day-num">04</span><h3>Your notes</h3><p>Tell us everything. Too bold, not bold enough, wrong photo — we want all of it.</p></article>
+          <article class="day-card"><span class="day-num">05</span><h3>Revisions</h3><p>Our designers and writers work through every note until it sounds like you on your best day.</p></article>
+          <article class="day-card"><span class="day-num">06</span><h3>Polish &amp; QA</h3><p>Speed-tuned, phone-tested, search-ready. We sweat the last 2% — that's where “fine” becomes “damn.”</p></article>
+          <article class="day-card day-launch"><span class="day-num">07</span><h3>Launch ☀</h3><p>Your domain goes live and the internet finally sees your business the way your best customers do.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SCENE 05 · THE STUDIO ============ -->
+    <section class="flow" id="team" data-scene="team">
+      <div class="team-head">
+        <p class="eyebrow">✎ THE HUMANS BEHIND IT</p>
+        <h2 class="display">Fast machines.<br><em>Careful people.</em></h2>
+        <p class="lede">The Factory gets your first draft standing in days. Then the studio team takes
+          over — and nothing ships until they’ve signed off. Every site crosses three desks
+          before you ever see it.</p>
+      </div>
+      <div class="pass-grid">
+        <article class="pass-card reveal">
+          <span class="pass-num">01</span>
+          <h3>The design pass</h3>
+          <p>A designer reworks layout, color, and type around your brand — until it looks like
+            you hired someone expensive. Because you did.</p>
+          <span class="pass-tag">LAYOUT · COLOR · TYPE</span>
+        </article>
+        <article class="pass-card reveal">
+          <span class="pass-num">02</span>
+          <h3>The words pass</h3>
+          <p>A writer goes line by line until every headline sells and every sentence sounds like you
+            on your best day. No filler, no jargon.</p>
+          <span class="pass-tag">HEADLINES · STORY · CTA</span>
+        </article>
+        <article class="pass-card reveal">
+          <span class="pass-num">03</span>
+          <h3>The final eye</h3>
+          <p>A reviewer clicks every link, tests every screen size, and tries to break things on
+            purpose — so your customers can’t. Then we launch.</p>
+          <span class="pass-tag">QA · SPEED · MOBILE</span>
+        </article>
+      </div>
+      <p class="team-sign reveal">Nothing goes live until a person signs it. ☀</p>
+    </section>
+
+    <!-- ============ SCENE 06 · NUMBERS ============ -->
+    <section class="scene" id="numbers" data-scene="numbers" style="--h:240">
+      <div class="pin">
+        <div class="numbers-wrap">
+          <p class="eyebrow">∑&ensp;THE SCOREBOARD</p>
+          <div class="numbers-grid">
+            <div class="num"><b><span data-count="7">0</span></b><p>days from kickoff<br>to launch</p></div>
+            <div class="num"><b><span data-count="3">0</span></b><p>human passes on<br>every single page</p></div>
+            <div class="num"><b><span data-count="100">0</span><i>%</i></b><p>shaped around your<br>business — not a theme</p></div>
+            <div class="num"><b><span data-count="24">0</span><i>/7</i></b><p>watched, backed up<br>&amp; protected after launch</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SCENE 07 · PLANS ============ -->
+    <section class="flow" id="pricing" data-scene="pricing">
+      <div class="pricing-head">
+        <p class="eyebrow">◈ TWO WAYS TO BUILD</p>
+        <h2 class="display">Pay for a website,<br><em>get a salesperson.</em></h2>
+        <p class="lede">One flat quote, agreed before we start — half to begin, half when you love it.
+          No hourly meters, no surprise invoices.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="price-card" data-tilt>
+          <div class="pc-tag">THE STARTER</div>
+          <h3>Essential</h3>
+          <div class="pc-price">5<span>&nbsp;custom pages</span></div>
+          <p class="pc-sub">a sharp, fast presence that makes the phone ring</p>
+          <ul>
+            <li>Home, about, services, contact — plus one page that’s all yours</li>
+            <li>Built for phones first, where your customers are</li>
+            <li>Contact &amp; lead-capture forms straight to your inbox</li>
+            <li>Professional copywriting included</li>
+            <li>SEO foundations — titles, meta, speed, alt text</li>
+            <li>Hosting &amp; SSL set up for you</li>
+            <li>30 days of post-launch support</li>
+          </ul>
+          <div class="pc-deal">☀ Comes with your first month of <b>Care Basic</b> — on us</div>
+          <a class="btn btn-ghost btn-wide magnetic" href="mailto:hello@sunblockstudio.com?subject=Essential%20build">Start Essential</a>
+        </div>
+        <div class="price-card price-featured" data-tilt>
+          <div class="pc-tag">THE FULL ENGINE</div>
+          <h3>Professional</h3>
+          <div class="pc-price">8<span>&nbsp;custom pages</span></div>
+          <p class="pc-sub">for businesses ready to take bookings and own their keywords</p>
+          <ul>
+            <li>Everything in Essential, with room to stretch</li>
+            <li>Online booking or scheduling, built in</li>
+            <li>Advanced SEO to compete for your search terms</li>
+            <li>Google Business Profile set up &amp; optimized</li>
+            <li>Analytics &amp; conversion tracking</li>
+            <li>Social media integration</li>
+            <li>60 days of post-launch support</li>
+          </ul>
+          <div class="pc-deal">☀ Comes with your first month of <b>Care Pro</b> — on us</div>
+          <a class="btn btn-solar btn-wide magnetic" href="mailto:hello@sunblockstudio.com?subject=Professional%20build">Start Professional</a>
+        </div>
+      </div>
+
+      <div class="care-head">
+        <p class="eyebrow">♡ THEN WE KEEP IT ALIVE</p>
+        <h3 class="care-title">A website isn’t a launch.<br><em>It’s a heartbeat.</em></h3>
+      </div>
+      <div class="pricing-grid care-grid">
+        <div class="price-card care-card" data-tilt>
+          <div class="pc-tag">CARE BASIC</div>
+          <h3>Watched &amp; safe</h3>
+          <ul>
+            <li>Daily automated backups</li>
+            <li>Uptime monitoring — we know before you do</li>
+            <li>Security &amp; software updates</li>
+            <li>Monthly speed check</li>
+            <li>Monthly email check-in</li>
+          </ul>
+        </div>
+        <div class="price-card care-card" data-tilt>
+          <div class="pc-tag">CARE PRO</div>
+          <h3>Watched &amp; growing</h3>
+          <ul>
+            <li>Everything in Care Basic</li>
+            <li>2 hours of edits, every month</li>
+            <li>Monthly Google Business post</li>
+            <li>Keyword ranking + traffic reports</li>
+            <li>Priority support</li>
+            <li>A free new page every quarter</li>
+          </ul>
+        </div>
+      </div>
+      <p class="pricing-note">Exact quote on a 15-minute discovery call. We’ll recommend the right
+        fit — no pressure, no homework.</p>
+    </section>
+
+    <!-- ============ SCENE 08 · SUNRISE / CONTACT ============ -->
+    <section class="scene" id="contact" data-scene="outro" style="--h:200">
+      <div class="pin">
+        <div class="outro-inner">
+          <p class="eyebrow">☀&ensp;YOUR TURN IN THE LIGHT</p>
+          <h2 class="outro-title">Let's build<br><em>yours.</em></h2>
+          <a class="outro-mail magnetic" href="mailto:hello@sunblockstudio.com">hello@sunblockstudio.com</a>
+          <p class="outro-note">Tell us your business name. We'll take it from there.</p>
+        </div>
+        <footer class="footer">
+          <span>© <span id="yr">2026</span> Sunblock Studio · Miami, FL</span>
+          <span class="footer-tag">BUILT TO BRING YOU BUSINESS</span>
+          <span>sunblockstudio.com</span>
+        </footer>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="main.js"></script>
+</body>
+</html>
