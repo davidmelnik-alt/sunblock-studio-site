@@ -274,10 +274,34 @@
     <section class="scene" id="contact" data-scene="outro" style="--h:200">
       <div class="pin">
         <div class="outro-inner">
-          <p class="eyebrow">☀&ensp;YOUR TURN IN THE LIGHT</p>
-          <h2 class="outro-title">Let's build<br><em>yours.</em></h2>
-          <a class="outro-mail magnetic" href="mailto:hello@sunblockstudio.com">hello@sunblockstudio.com</a>
-          <p class="outro-note">Tell us your business name. We'll take it from there.</p>
+          <div class="outro-copy">
+            <p class="eyebrow">☀&ensp;YOUR TURN IN THE LIGHT</p>
+            <h2 class="outro-title">Let's build<br><em>yours.</em></h2>
+            <p class="outro-note">Tell us about your business — we'll come back within one
+              business day with a plan and a flat quote.</p>
+            <a class="outro-mail magnetic" href="mailto:hello@sunblockstudio.com">hello@sunblockstudio.com</a>
+          </div>
+          <form class="inquiry" id="inquiry">
+            <p class="iq-label">✉&ensp;REQUEST YOUR BUILD</p>
+            <div class="iq-row">
+              <input type="text" name="name" placeholder="Your name *" required autocomplete="name">
+              <input type="text" name="business" placeholder="Business name *" required autocomplete="organization">
+            </div>
+            <div class="iq-row">
+              <input type="email" name="email" placeholder="Email *" required autocomplete="email">
+              <input type="tel" name="phone" placeholder="Phone (optional)" autocomplete="tel">
+            </div>
+            <select name="interest" required>
+              <option value="" disabled selected>What are you interested in? *</option>
+              <option>Essential build — 5 pages</option>
+              <option>Professional build — 8 pages</option>
+              <option>Care plan for an existing site</option>
+              <option>Not sure yet — let&#8217;s talk</option>
+            </select>
+            <textarea name="message" rows="4" placeholder="Tell us about your business — what you do, what you need, and when you want it live."></textarea>
+            <button class="btn btn-solar btn-wide magnetic" type="submit">Send my request ☀</button>
+            <p class="iq-hint">Opens your email app with everything filled in — one tap to send.</p>
+          </form>
         </div>
         <footer class="footer">
           <span>© <span id="yr">2026</span> Sunblock Studio · Miami, FL</span>

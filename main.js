@@ -357,32 +357,35 @@ function computeVisual() {
     V.netAlpha = .85;
     V.nebula = .8;
   }
-  // — TEAM: calm cosmos, sparse drift
+  // — TEAM: calm cosmos; sun glides left, finishing exactly as
+  //   the scoreboard scene begins (t hits 1 when numbers enters view)
   if (team && team.on) {
-    const v = team.vis;
+    const t = smooth(clamp((eased + vh - team.top) / team.h, 0, 1));
     V.wOrbit = 0; V.wPlexus = .5; V.netAlpha = .4;
-    V.nebula = lerp(.8, .6, v);
-    V.sun.r = .05; V.sun.x = lerp(.32, -.38, smooth(v)); V.sun.y = .36;
-    V.hue = lerp(V.hue, .25, smooth(v));
+    V.nebula = lerp(.8, .6, t);
+    V.sun.r = .05; V.sun.x = lerp(.32, -.38, t); V.sun.y = .34;
+    V.hue = lerp(V.hue, .25, t);
   }
   // — NUMBERS: warmth returns
   if (nums && nums.on) {
     const p = nums.p;
     V.hue = lerp(.25, 0, smooth(p));
-    V.sun.r = lerp(.05, .1, p); V.sun.x = -.38; V.sun.y = .32;
+    V.sun.r = lerp(.05, .1, p); V.sun.x = -.38; V.sun.y = .34;
     V.wOrbit = 0; V.wPlexus = .5; V.netAlpha = .45; V.brk = .2;
   }
   if (pri && pri.on) {
-    V.sun.r = .1; V.sun.x = -.38; V.sun.y = .32;
+    V.sun.r = .1; V.sun.x = -.38; V.sun.y = .34;
     V.wOrbit = 0; V.wPlexus = .4; V.netAlpha = .35; V.hue = 0;
   }
-  // — OUTRO: sunrise. The star returns, vast, below the horizon.
+  // — OUTRO: sunrise. The sun first dips below the horizon as the
+  //   scene slides in (entry blend e), then rises huge with the pin.
   if (out && out.on) {
     const p = out.p;
     const t = smooth(p);
-    V.sun.x = lerp(-.38, 0, t);
-    V.sun.y = lerp(-.9, -.42, t);
-    V.sun.r = lerp(.2, .58, t);
+    const e = smooth(clamp((eased + vh - out.top) / vh, 0, 1));
+    V.sun.x = lerp(-.38, lerp(-.38, 0, t), e);
+    V.sun.y = lerp(.34, lerp(-.9, -.42, t), e);
+    V.sun.r = lerp(.1, lerp(.2, .58, t), e);
     V.brk = .12; V.hue = 0;
     V.nebula = lerp(.6, .35, t);
     V.wOrbit = t; V.wPlexus = 1 - t; V.netAlpha = .5;
@@ -562,6 +565,28 @@ document.querySelectorAll("[data-jump]").forEach(a =>
   }));
 
 document.getElementById("yr").textContent = new Date().getFullYear();
+
+/* ── inquiry form → prefilled email ────────────────────────── */
+const inquiry = document.getElementById("inquiry");
+if (inquiry) inquiry.addEventListener("submit", e => {
+  e.preventDefault();
+  const f = new FormData(inquiry);
+  const get = k => (f.get(k) || "").toString().trim();
+  const subject = `Website request — ${get("business")}`;
+  const body = [
+    `Name: ${get("name")}`,
+    `Business: ${get("business")}`,
+    `Email: ${get("email")}`,
+    get("phone") && `Phone: ${get("phone")}`,
+    `Interested in: ${get("interest")}`,
+    "",
+    get("message"),
+  ].filter(Boolean).join("\n");
+  location.href = "mailto:hello@sunblockstudio.com?subject=" +
+    encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  inquiry.querySelector(".iq-hint").textContent =
+    "Your email app just opened with everything filled in — hit send and you're done ☀";
+});
 
 /* ════════════════════════════════════════════════════════════
    MAIN LOOP
