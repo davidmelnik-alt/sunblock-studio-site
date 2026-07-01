@@ -1,318 +1,1287 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sunblock Studio — Websites Built to Bring You Business</title>
-  <meta name="description" content="Sunblock Studio builds cinematic, conversion-first websites for real businesses. Designed, built, and live in seven days.">
-  <meta property="og:title" content="Sunblock Studio">
-  <meta property="og:description" content="Websites built to bring you business. Live in seven days.">
-  <meta property="og:url" content="https://sunblockstudio.com">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='28' fill='%23ffb24d'/%3E%3Ccircle cx='50' cy='50' r='42' fill='none' stroke='%23ffb24d' stroke-width='3' stroke-dasharray='8 10'/%3E%3C/svg%3E">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=Space+Grotesk:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sunblock Studio — We build your website before you pay a dime</title>
+<meta name="description" content="Sunblock Studio builds conversion-first websites for local businesses — and we build yours before you decide. See it first. $0 down. First month free.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=Space+Grotesk:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════════════════════
+   SUNBLOCK STUDIO — SOLAR CINEMA · DAYLIGHT CUT
+   Same film, new light. The screen is still the film.
+   ════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#FDF7EC;
+  --ink:#33261A;
+  --ink-dim:rgba(51,38,26,.64);
+  --ink-faint:rgba(51,38,26,.40);
+  --solar:#F59E1D;
+  --solar-hot:#E86A24;
+  --solar-deep:#B45309;
+  --sky:#2E86AB;
+  --line:rgba(232,106,36,.20);
+  --glass:rgba(255,252,244,.62);
+  --card:#FFFDF7;
+  --serif:"Fraunces",Georgia,serif;
+  --sans:"Space Grotesk","Helvetica Neue",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-weight:300;
+  overflow-x:hidden;-webkit-font-smoothing:antialiased;cursor:none;
+}
+@media (pointer:coarse){ body{cursor:auto} }
+::selection{background:var(--solar);color:#2b1602}
+
+/* ── canvases: the film layer ── */
+#gl,#net{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none}
+#gl{z-index:0}#net{z-index:1}
+
+/* film grain — lighter touch in daylight */
+.grain{
+  position:fixed;inset:-50%;z-index:60;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity:.03;animation:grain 7s steps(8) infinite;mix-blend-mode:multiply;
+}
+@keyframes grain{
+  0%,100%{transform:translate(0,0)}12%{transform:translate(-3%,2%)}
+  25%{transform:translate(2%,-4%)}37%{transform:translate(-4%,-2%)}
+  50%{transform:translate(3%,3%)}62%{transform:translate(-2%,4%)}
+  75%{transform:translate(4%,-3%)}87%{transform:translate(-3%,-3%)}
+}
+
+/* cursor — warm ring on daylight */
+.cursor{
+  position:fixed;z-index:70;width:22px;height:22px;left:0;top:0;pointer-events:none;
+  border:1.5px solid rgba(232,106,36,.9);border-radius:50%;
+  transform:translate(-50%,-50%);
+  transition:width .25s,height .25s,background .25s;
+  box-shadow:0 0 20px rgba(245,158,29,.35);
+}
+.cursor.is-hot{width:64px;height:64px;background:rgba(245,158,29,.14)}
+@media (pointer:coarse){ .cursor{display:none} }
+
+/* ── loader ── */
+.loader{
+  position:fixed;inset:0;z-index:100;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
+  transition:opacity .9s ease,visibility .9s;
+}
+.loader.is-done{opacity:0;visibility:hidden}
+.loader-sun{
+  width:64px;height:64px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#fff3d6,var(--solar) 45%,var(--solar-hot));
+  box-shadow:0 0 60px 18px rgba(245,158,29,.5);
+  animation:pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse{50%{transform:scale(1.12);box-shadow:0 0 90px 30px rgba(245,158,29,.6)}}
+.loader-word{font-family:var(--mono);font-size:12px;letter-spacing:.5em;color:var(--ink-dim)}
+
+/* ── nav ── */
+.nav{
+  position:fixed;z-index:50;top:0;left:0;right:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px clamp(20px,4vw,56px);
+  background:linear-gradient(rgba(253,247,236,.85),rgba(253,247,236,0));
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(232,106,36,.10);
+  transition:transform .5s cubic-bezier(.22,1,.36,1);
+}
+.nav.is-hidden{transform:translateY(-110%)}
+.nav-logo{
+  display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink);
+  font-family:var(--mono);font-size:13px;letter-spacing:.22em;font-weight:500;
+}
+.nav-logo em{font-style:normal;color:var(--solar-hot);margin-left:.45em}
+.nav-sun{
+  width:14px;height:14px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#fff0cd,var(--solar) 55%,var(--solar-hot));
+  box-shadow:0 0 14px rgba(245,158,29,.9);
+}
+.nav-links{display:flex;gap:clamp(16px,3vw,38px);align-items:center}
+.nav-links a{
+  color:var(--ink-dim);text-decoration:none;font-size:13px;letter-spacing:.14em;
+  text-transform:uppercase;font-weight:400;transition:color .25s;
+}
+.nav-links a:hover{color:var(--solar-hot)}
+@media (max-width:760px){ .nav-links a:not(.btn-small){display:none} }
+
+/* ── buttons ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+  padding:15px 30px;border-radius:999px;text-decoration:none;
+  transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s,background .3s,color .3s;
+  will-change:transform;border:none;cursor:none;
+}
+@media (pointer:coarse){ .btn{cursor:pointer} }
+.btn-wide{width:100%;margin-top:28px}
+.btn-solar{
+  background:linear-gradient(120deg,var(--solar),var(--solar-hot));
+  color:#2b1602;font-weight:500;
+  box-shadow:0 8px 36px rgba(232,106,36,.30),inset 0 1px 0 rgba(255,255,255,.5);
+}
+.btn-solar:hover{box-shadow:0 12px 52px rgba(232,106,36,.5)}
+.btn-ghost{
+  color:var(--ink);border:1px solid rgba(51,38,26,.28);background:rgba(255,253,247,.5);
+}
+.btn-ghost:hover{border-color:var(--solar-hot);color:var(--solar-hot)}
+.btn-small{padding:10px 20px;font-size:11px;background:rgba(245,158,29,.12);color:var(--solar-deep);border:1px solid rgba(232,106,36,.4)}
+.btn-small:hover{background:var(--solar);color:#2b1602}
+
+/* ── type system ── */
+.eyebrow{
+  font-family:var(--mono);font-size:clamp(10px,1.1vw,12.5px);letter-spacing:.42em;
+  color:var(--solar-deep);text-transform:uppercase;margin-bottom:26px;
+}
+.display{
+  font-family:var(--serif);font-weight:300;
+  font-size:clamp(40px,6.4vw,86px);line-height:1.02;letter-spacing:-.01em;
+}
+.display em{font-style:italic;color:var(--solar-hot)}
+.lede{
+  font-size:clamp(15px,1.5vw,19px);line-height:1.75;color:var(--ink-dim);
+  max-width:560px;margin-top:26px;
+}
+.mono{font-family:var(--mono)}
+
+/* ── scene plumbing ── */
+.scene{position:relative;z-index:2;height:calc(var(--h) * 1vh)}
+.pin{
+  position:sticky;top:0;height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  overflow:visible;
+}
+.pin-clip{overflow:hidden}
+.flow{position:relative;z-index:2;padding:clamp(90px,14vh,160px) clamp(20px,6vw,90px)}
+
+/* ════════ SCENE 01 · HERO ════════ */
+.hero-inner{
+  text-align:center;padding:60px 40px;max-width:1100px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(253,247,236,.55),transparent 75%);
+}
+.hero-sub,.eyebrow{text-shadow:0 1px 16px rgba(253,247,236,.9)}
+.hero-title{
+  font-family:var(--serif);font-weight:300;
+  font-size:clamp(52px,9.6vw,138px);line-height:1.0;letter-spacing:-.015em;
+  margin:8px 0 30px;text-shadow:0 2px 34px rgba(253,247,236,.6);
+}
+.hero-title em{
+  font-style:italic;
+  background:linear-gradient(100deg,var(--solar-deep) 5%,var(--solar-hot) 50%,var(--solar) 95%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-title .line{display:block;overflow:hidden}
+.hero-title .line>span{display:inline-block;transform:translateY(110%);animation:rise 1.1s cubic-bezier(.16,1,.3,1) forwards}
+.hero-title .line:nth-child(2)>span{animation-delay:.14s}
+@keyframes rise{to{transform:translateY(0)}}
+.hero-sub{font-size:clamp(15px,1.7vw,20px);line-height:1.8;color:var(--ink-dim)}
+.hero-sub strong{color:var(--ink);font-weight:500}
+.hero-cta{display:flex;gap:18px;justify-content:center;margin-top:42px;flex-wrap:wrap}
+
+.reveal{opacity:0;transform:translateY(26px);transition:opacity 1s ease,transform 1s cubic-bezier(.16,1,.3,1)}
+.reveal.is-in{opacity:1;transform:none}
+
+.scroll-cue{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:14px}
+.scroll-cue-line{width:1px;height:54px;background:linear-gradient(var(--solar-hot),transparent);position:relative;overflow:hidden}
+.scroll-cue-line::after{content:"";position:absolute;left:0;top:-40%;width:100%;height:40%;background:var(--solar-deep);animation:drip 1.8s ease-in-out infinite}
+@keyframes drip{to{top:110%}}
+.scroll-cue-txt{font-family:var(--mono);font-size:9.5px;letter-spacing:.4em;color:var(--ink-faint)}
+
+/* ════════ SCENE 02 · SIGNAL BEATS ════════ */
+.beat{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:0 24px;
+  opacity:0;
+  background:radial-gradient(55% 42% at 50% 50%,rgba(253,247,236,.68),transparent 72%);
+}
+.beat h2{
+  font-family:var(--serif);font-weight:300;
+  font-size:clamp(38px,6.8vw,92px);line-height:1.08;letter-spacing:-.01em;
+  text-shadow:0 2px 26px rgba(253,247,236,.85);
+}
+.beat h2 em{font-style:italic;color:var(--solar-hot)}
+.beat-kicker{font-family:var(--mono);font-size:12px;letter-spacing:.5em;color:var(--ink-faint);margin-bottom:30px}
+.beat-chips{display:flex;gap:14px;margin-top:44px;flex-wrap:wrap;justify-content:center}
+.chip{
+  font-family:var(--mono);font-size:12px;letter-spacing:.1em;
+  padding:11px 22px;border-radius:999px;
+  border:1px solid var(--line);background:var(--glass);
+  backdrop-filter:blur(8px);color:var(--solar-deep);
+}
+
+/* ════════ SCENE 03 · FACTORY ════════ */
+.factory-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,5vw,80px);
+  align-items:center;max-width:1280px;width:100%;padding:0 clamp(20px,5vw,80px);
+}
+.factory-copy .display{font-size:clamp(34px,4.6vw,62px)}
+.factory-feats{list-style:none;margin-top:36px;display:flex;flex-direction:column;gap:20px}
+.factory-feats li{
+  padding:18px 22px;border-left:2px solid var(--line);
+  color:var(--ink-dim);line-height:1.65;font-size:15px;
+  background:linear-gradient(90deg,rgba(245,158,29,.08),transparent 70%);
+  opacity:.3;transform:translateX(-12px);
+  transition:opacity .6s,transform .6s,border-color .6s;
+}
+.factory-feats li.is-on{opacity:1;transform:none;border-color:var(--solar-hot)}
+.factory-feats b{color:var(--ink);font-weight:500;display:block;margin-bottom:4px}
+
+/* terminal — stays dark: the one deep-night object left in daylight */
+.terminal{
+  background:#191210;border:1px solid rgba(232,106,36,.28);border-radius:14px;
+  box-shadow:0 40px 90px rgba(51,38,26,.28),inset 0 1px 0 rgba(255,255,255,.05);
+  overflow:hidden;
+}
+.terminal-bar{
+  display:flex;align-items:center;gap:8px;padding:13px 16px;
+  background:rgba(255,255,255,.04);border-bottom:1px solid rgba(232,106,36,.16);
+}
+.terminal-bar i{width:11px;height:11px;border-radius:50%;display:block}
+.terminal-bar i:nth-child(1){background:#ff5f57}.terminal-bar i:nth-child(2){background:#febc2e}.terminal-bar i:nth-child(3){background:#28c840}
+.terminal-title{font-family:var(--mono);font-size:11px;color:rgba(244,237,226,.4);margin-left:10px;letter-spacing:.12em}
+.terminal-body{
+  font-family:var(--mono);font-size:13px;line-height:2.05;color:rgba(244,237,226,.82);
+  padding:22px 24px;min-height:360px;white-space:pre-wrap;
+}
+.terminal-body .t-cmd{color:#fff}
+.terminal-body .t-ok{color:#4ade80}
+.terminal-body .t-key{color:var(--solar)}
+.terminal-body .t-dim{color:rgba(244,237,226,.4)}
+.t-cursor{display:inline-block;width:8px;height:15px;background:var(--solar);vertical-align:-2px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* ════════ SCENE 04 · SEVEN DAYS — now a VERTICAL scrub ════════ */
+.days-pin{align-items:stretch;justify-content:flex-start;padding:0 clamp(20px,6vw,90px)}
+.days-head{
+  display:flex;align-items:center;gap:clamp(16px,3vw,36px);
+  padding-top:clamp(80px,12vh,120px);max-width:1180px;margin:0 auto;width:100%;
+}
+.days-head .eyebrow{margin:0;white-space:nowrap}
+.days-meter{flex:1;height:2px;background:rgba(51,38,26,.14);border-radius:2px;overflow:hidden}
+.days-meter span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--solar),var(--solar-hot));box-shadow:0 0 12px rgba(232,106,36,.6)}
+.days-count{font-family:var(--mono);font-size:12px;letter-spacing:.3em;color:var(--ink-faint);white-space:nowrap}
+.days-count b{color:var(--solar-hot);font-weight:500}
+.days-window{flex:1;overflow:hidden;max-width:1180px;margin:0 auto;width:100%;position:relative}
+.days-window::before,.days-window::after{
+  content:"";position:absolute;left:0;right:0;height:70px;z-index:3;pointer-events:none;
+}
+.days-window::before{top:0;background:linear-gradient(rgba(253,247,236,.9),transparent)}
+.days-window::after{bottom:0;background:linear-gradient(transparent,rgba(253,247,236,.9))}
+.days-track{display:flex;flex-direction:column;gap:clamp(22px,4vh,40px);padding:clamp(40px,8vh,80px) 0;will-change:transform}
+.day-card{
+  display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,4vw,44px);align-items:baseline;
+  background:var(--glass);backdrop-filter:blur(10px);
+  border:1px solid var(--line);border-radius:18px;
+  padding:clamp(22px,3.4vh,34px) clamp(22px,3.5vw,40px);
+  box-shadow:0 18px 50px rgba(51,38,26,.07);
+}
+.day-card .dn{
+  font-family:var(--serif);font-weight:300;font-style:italic;
+  font-size:clamp(34px,4.5vw,56px);color:var(--solar-hot);line-height:1;min-width:2.2ch;
+}
+.day-card h3{font-family:var(--serif);font-weight:400;font-size:clamp(19px,2.1vw,26px);margin-bottom:6px}
+.day-card p{color:var(--ink-dim);font-size:15px;line-height:1.7;max-width:62ch}
+
+/* ════════ SCENE 05 · TEAM PASSES ════════ */
+.team-wrap{max-width:1180px;margin:0 auto}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,2.5vw,30px);margin-top:56px}
+.pass-card{
+  background:var(--card);border:1px solid var(--line);border-radius:20px;
+  padding:clamp(26px,3vw,38px);
+  box-shadow:0 24px 70px rgba(51,38,26,.08);
+  transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s,opacity 1s,translate 1s;
+  will-change:transform;
+}
+.pass-card:hover{box-shadow:0 36px 90px rgba(232,106,36,.18)}
+.pass-num{font-family:var(--mono);font-size:12px;letter-spacing:.3em;color:var(--solar-deep);margin-bottom:20px;display:block}
+.pass-card h3{font-family:var(--serif);font-weight:400;font-size:clamp(21px,2.2vw,27px);margin-bottom:14px}
+.pass-card p{color:var(--ink-dim);font-size:15px;line-height:1.75}
+.pass-tags{margin-top:24px;font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--ink-faint)}
+.team-sign{
+  text-align:center;margin-top:52px;font-family:var(--mono);font-size:12.5px;
+  letter-spacing:.24em;color:var(--ink-dim);
+}
+.team-sign b{color:var(--solar-hot);font-weight:500}
+@media (max-width:900px){ .team-grid{grid-template-columns:1fr} }
+
+/* ════════ SCENE 06 · NUMBERS ════════ */
+.numbers-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,3vw,40px);
+  max-width:1180px;width:100%;padding:0 clamp(20px,5vw,80px);text-align:center;
+}
+.num-cell .big{
+  font-family:var(--serif);font-weight:300;
+  font-size:clamp(56px,8vw,120px);line-height:1;color:var(--ink);
+}
+.num-cell .big i{font-style:italic;color:var(--solar-hot);font-size:.5em}
+.num-cell .lbl{margin-top:14px;font-size:13.5px;line-height:1.6;color:var(--ink-dim)}
+@media (max-width:760px){ .numbers-grid{grid-template-columns:repeat(2,1fr);gap:44px 20px} }
+
+/* ════════ SCENE 07 · OFFER + PRICING ════════ */
+.offer-wrap{max-width:1180px;margin:0 auto}
+.offer-head{text-align:center;max-width:760px;margin:0 auto}
+.guarantee{
+  margin:64px auto 0;max-width:900px;text-align:center;
+  background:linear-gradient(140deg,rgba(245,158,29,.12),rgba(232,106,36,.06));
+  border:1px solid rgba(232,106,36,.35);border-radius:24px;
+  padding:clamp(34px,5vw,56px);
+  box-shadow:0 30px 80px rgba(232,106,36,.12);
+}
+.guarantee h3{
+  font-family:var(--serif);font-weight:300;font-size:clamp(26px,3.6vw,44px);line-height:1.2;
+}
+.guarantee h3 em{font-style:italic;color:var(--solar-hot)}
+.guarantee p{color:var(--ink-dim);margin-top:18px;font-size:15.5px;line-height:1.8;max-width:60ch;margin-left:auto;margin-right:auto}
+.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(18px,2.5vw,30px);margin-top:64px}
+.price-card{
+  background:var(--card);border:1px solid var(--line);border-radius:22px;
+  padding:clamp(28px,3.4vw,44px);
+  box-shadow:0 24px 70px rgba(51,38,26,.08);
+  transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s;
+  display:flex;flex-direction:column;
+}
+.price-card:hover{transform:translateY(-8px)}
+.price-featured{
+  border:1px solid rgba(232,106,36,.55);
+  background:linear-gradient(160deg,#FFF9EC,#FFF3DC);
+  box-shadow:0 34px 90px rgba(232,106,36,.16);
+  position:relative;
+}
+.price-featured::before{
+  content:"MOST POPULAR";position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:10px;letter-spacing:.3em;
+  background:linear-gradient(120deg,var(--solar),var(--solar-hot));color:#2b1602;
+  padding:6px 18px;border-radius:999px;font-weight:500;
+}
+.price-featured:hover{box-shadow:0 44px 110px rgba(232,106,36,.26)}
+.pc-tag{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--solar-deep);margin-bottom:14px}
+.price-card h3{font-family:var(--serif);font-weight:400;font-size:30px;margin-bottom:8px}
+.pc-price{font-family:var(--serif);font-weight:300;font-size:clamp(52px,5.6vw,78px);line-height:1.1;margin:10px 0 4px}
+.pc-price i{font-style:italic;color:var(--solar-hot);font-size:.5em;vertical-align:.4em}
+.pc-price span{font-size:18px;color:var(--ink-faint);font-family:var(--sans)}
+.pc-terms{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;color:var(--ink-dim);margin-bottom:26px}
+.price-card ul{list-style:none;display:flex;flex-direction:column;gap:13px;flex:1}
+.price-card li{color:var(--ink-dim);font-size:14.5px;line-height:1.6;padding-left:26px;position:relative}
+.price-card li::before{content:"☀";position:absolute;left:0;top:0;color:var(--solar-hot);font-size:12px}
+.price-note{
+  text-align:center;margin-top:34px;color:var(--ink-dim);font-size:14px;line-height:1.8;
+}
+.price-note b{color:var(--ink);font-weight:500}
+@media (max-width:860px){ .price-grid{grid-template-columns:1fr} }
+
+/* ════════ SCENE 08 · OUTRO / CONTACT ════════ */
+.outro-inner{
+  display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,90px);
+  max-width:1180px;width:100%;padding:0 clamp(20px,5vw,80px);align-items:center;
+}
+.outro-copy .display{font-size:clamp(38px,5.4vw,72px)}
+.iq{
+  background:var(--card);border:1px solid var(--line);border-radius:22px;
+  padding:clamp(26px,3.2vw,40px);
+  box-shadow:0 34px 90px rgba(51,38,26,.12);
+  display:flex;flex-direction:column;gap:16px;
+}
+.iq label{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;color:var(--ink-dim);text-transform:uppercase;display:block;margin-bottom:7px}
+.iq input,.iq select,.iq textarea{
+  width:100%;padding:13px 15px;background:#fff;color:var(--ink);
+  border:1px solid rgba(51,38,26,.16);border-radius:10px;font-family:var(--sans);font-size:15px;
+}
+.iq input:focus,.iq select:focus,.iq textarea:focus{outline:none;border-color:var(--solar-hot);box-shadow:0 0 0 3px rgba(232,106,36,.14)}
+.iq-hint{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink-faint);text-align:center;line-height:1.7}
+@media (max-width:860px){ .outro-inner{grid-template-columns:1fr} }
+
+/* footer */
+.footer{
+  position:relative;z-index:2;padding:44px clamp(20px,5vw,80px);
+  display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;
+  border-top:1px solid rgba(232,106,36,.14);
+  background:rgba(253,247,236,.75);backdrop-filter:blur(8px);
+  font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--ink-faint);
+}
+.footer a{color:var(--solar-deep);text-decoration:none}
+
+@media (max-width:900px){
+  .factory-grid{grid-template-columns:1fr}
+  .terminal-body{min-height:0;height:210px;overflow:hidden;line-height:1.8;padding:16px 18px;font-size:12px}
+  .day-card{grid-template-columns:1fr;gap:8px}
+}
+@media (prefers-reduced-motion:reduce){
+  .hero-title .line>span{animation:none;transform:none}
+  .reveal{opacity:1;transform:none;transition:none}
+  .scroll-cue-line::after{animation:none}
+}
+</style>
 </head>
 <body>
 
-  <!-- ============ THE FILM : full-screen generative canvases ============ -->
-  <canvas id="gl" aria-hidden="true"></canvas>
-  <canvas id="net" aria-hidden="true"></canvas>
-  <div class="grain" aria-hidden="true"></div>
-  <div class="cursor" aria-hidden="true"></div>
+<div class="loader" id="loader"><div class="loader-sun"></div><div class="loader-word">SUNBLOCK STUDIO</div></div>
+<canvas id="gl"></canvas>
+<canvas id="net"></canvas>
+<div class="grain"></div>
+<div class="cursor"></div>
 
-  <!-- ============ LOADER ============ -->
-  <div class="loader" id="loader" aria-hidden="true">
-    <div class="loader-sun"></div>
-    <div class="loader-word">SUNBLOCK&nbsp;STUDIO</div>
+<nav class="nav" id="nav">
+  <a class="nav-logo" href="#top"><span class="nav-sun"></span>SUNBLOCK<em>STUDIO</em></a>
+  <div class="nav-links">
+    <a href="#factory" data-jump>Factory</a>
+    <a href="#days" data-jump>Process</a>
+    <a href="#team" data-jump>Team</a>
+    <a href="#offer" data-jump>The Offer</a>
+    <a class="btn btn-small magnetic" href="#contact" data-jump>See yours free</a>
   </div>
+</nav>
 
-  <!-- ============ NAV ============ -->
-  <header class="nav" id="nav">
-    <a class="nav-logo" href="#hero" data-jump>
-      <span class="nav-sun" aria-hidden="true"></span>
-      <span>SUNBLOCK<em>STUDIO</em></span>
-    </a>
-    <nav class="nav-links">
-      <a href="#factory" data-jump>Factory</a>
-      <a href="#days" data-jump>Process</a>
-      <a href="#team" data-jump>Team</a>
-      <a href="#pricing" data-jump>Plans</a>
-    </nav>
-    <a class="btn btn-small magnetic" href="mailto:hello@sunblockstudio.com">Start in 7 days</a>
-  </header>
-
-  <main id="film">
-
-    <!-- ============ SCENE 01 · THE SUN ============ -->
-    <section class="scene" id="hero" data-scene="hero" style="--h:220">
-      <div class="pin">
-        <div class="hero-inner">
-          <p class="eyebrow reveal">☀&ensp;WEB STUDIO — MIAMI, FLORIDA</p>
-          <h1 class="hero-title">
-            <span class="line"><span>Built to bring</span></span>
-            <span class="line"><span>you <em>business.</em></span></span>
-          </h1>
-          <p class="hero-sub reveal">Cinematic, conversion-first websites for real businesses.<br>
-          Designed, built, and live in <strong>seven days</strong>.</p>
-          <div class="hero-cta reveal">
-            <a class="btn btn-solar magnetic" href="#pricing" data-jump>Start your build</a>
-            <a class="btn btn-ghost magnetic" href="#factory" data-jump>How it works</a>
-          </div>
-        </div>
-        <div class="scroll-cue">
-          <span class="scroll-cue-line"></span>
-          <span class="scroll-cue-txt">SCROLL — THE SCREEN IS THE FILM</span>
-        </div>
+<!-- ════════ 01 · HERO ════════ -->
+<section class="scene" data-scene="hero" style="--h:180" id="top">
+  <div class="pin">
+    <div class="hero-inner">
+      <div class="eyebrow">☀ Web studio for local businesses</div>
+      <h1 class="hero-title">
+        <span class="line"><span>Built to bring</span></span>
+        <span class="line"><span>you <em>business.</em></span></span>
+      </h1>
+      <p class="hero-sub reveal">Your next customer is Googling you right now.<br>
+      <strong>So we build your website before you pay a dime</strong> — see it finished, live, on your phone. Love it, and it's yours.</p>
+      <div class="hero-cta reveal">
+        <a class="btn btn-solar magnetic" href="#contact" data-jump>Build mine — free to see</a>
+        <a class="btn btn-ghost magnetic" href="#factory" data-jump>How is that possible?</a>
       </div>
-    </section>
+    </div>
+    <div class="scroll-cue"><div class="scroll-cue-line"></div><div class="scroll-cue-txt">SCROLL — THE SCREEN IS THE FILM</div></div>
+  </div>
+</section>
 
-    <!-- ============ SCENE 02 · THE SIGNAL ============ -->
-    <section class="scene" id="signal" data-scene="signal" style="--h:300">
-      <div class="pin">
-        <div class="beat" data-beat="0">
-          <p class="beat-kicker">01 / THE TRUTH</p>
-          <h2>Every customer you'll<br>ever get sees your<br><em>website first.</em></h2>
-        </div>
-        <div class="beat" data-beat="1">
-          <p class="beat-kicker">02 / THE WINDOW</p>
-          <h2><em>Five seconds.</em><br>That's how long<br>they give you.</h2>
-        </div>
-        <div class="beat" data-beat="2">
-          <p class="beat-kicker">03 / THE FIX</p>
-          <h2>Most sites weren't built<br>for that fight.<br><em>Ours are.</em></h2>
-          <div class="beat-chips">
-            <span class="chip">Loads instantly</span>
-            <span class="chip">Looks expensive</span>
-            <span class="chip">Makes the phone ring</span>
-          </div>
-        </div>
+<!-- ════════ 02 · SIGNAL BEATS ════════ -->
+<section class="scene" data-scene="signal" style="--h:320">
+  <div class="pin">
+    <div class="beat">
+      <div class="beat-kicker">01 / THE TRUTH</div>
+      <h2>Every customer you'll<br>ever get sees your<br><em>website first.</em></h2>
+    </div>
+    <div class="beat">
+      <div class="beat-kicker">02 / THE WINDOW</div>
+      <h2><em>Five seconds.</em><br>That's how long<br>they give you.</h2>
+    </div>
+    <div class="beat">
+      <div class="beat-kicker">03 / THE FIX</div>
+      <h2>Most sites weren't built<br>for that fight.<br><em>Ours are.</em></h2>
+      <div class="beat-chips">
+        <span class="chip">Loads instantly</span>
+        <span class="chip">Looks expensive</span>
+        <span class="chip">Makes the phone ring</span>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
 
-    <!-- ============ SCENE 03 · THE FACTORY ============ -->
-    <section class="scene" id="factory" data-scene="factory" style="--h:320">
-      <div class="pin">
-        <div class="factory-grid">
-          <div class="factory-copy">
-            <p class="eyebrow">⚙&ensp;OUR UNFAIR ADVANTAGE</p>
-            <h2 class="display">The Website<br><em>Factory.</em></h2>
-            <p class="lede">Our in-house build engine researches your business, pulls your photos and
-              reviews, and assembles a real working draft — while other agencies are still
-              scheduling a kickoff call.</p>
-            <ul class="factory-feats">
-              <li data-feat="0"><b>It studies you.</b> Your brand, your reviews, your customers — mapped automatically.</li>
-              <li data-feat="1"><b>It builds overnight.</b> A complete multi-page draft, not a mood board.</li>
-              <li data-feat="2"><b>Then the studio takes over.</b> Our designers, writers, and reviewers rework every word and pixel by hand.</li>
-            </ul>
-          </div>
-          <div class="terminal" id="terminal">
-            <div class="terminal-bar">
-              <span class="tdot td-r"></span><span class="tdot td-y"></span><span class="tdot td-g"></span>
-              <span class="terminal-title">sunblock — factory v2.1</span>
-            </div>
-            <pre class="terminal-body" id="termBody"></pre>
-          </div>
-        </div>
+<!-- ════════ 03 · FACTORY ════════ -->
+<section class="scene" data-scene="factory" style="--h:260" id="factory">
+  <div class="pin">
+    <div class="factory-grid">
+      <div class="factory-copy">
+        <div class="eyebrow">⚙ Our unfair advantage</div>
+        <h2 class="display">The Website<br><em>Factory.</em></h2>
+        <ul class="factory-feats">
+          <li><b>It studies you.</b> Your brand, your reviews, your photos, your customers — mapped automatically from what's already out there.</li>
+          <li><b>It builds before you buy.</b> A complete working draft of <em>your</em> site — assembled while other agencies are still scheduling a kickoff call.</li>
+          <li><b>Then the studio takes over.</b> Our designers, writers, and reviewers rework every word and pixel by hand before anything ships.</li>
+        </ul>
       </div>
-    </section>
+      <div class="terminal" data-tilt>
+        <div class="terminal-bar"><i></i><i></i><i></i><span class="terminal-title">sunblock — factory v3.0</span></div>
+        <div class="terminal-body" id="termBody"></div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- ============ SCENE 04 · SEVEN DAYS ============ -->
-    <section class="scene" id="days" data-scene="days" style="--h:560">
-      <div class="pin pin-clip">
-        <div class="days-head">
-          <p class="eyebrow">⏱&ensp;THE SPRINT</p>
-          <div class="days-meter"><span id="daysMeterFill"></span></div>
-          <p class="days-count mono">DAY <b id="dayNum">01</b> / 07</p>
-        </div>
-        <div class="days-track" id="daysTrack">
-          <article class="day-card day-intro">
-            <h2 class="display">Idea to live site<br>in <em>seven days.</em></h2>
-            <p class="lede">No six-month agency saga. No disappearing freelancer.<br>A countdown, not a maybe. →</p>
-          </article>
-          <article class="day-card"><span class="day-num">01</span><h3>Kickoff</h3><p>You say go. We take your deposit, your story, and your best photos. That's all we need from you today.</p></article>
-          <article class="day-card"><span class="day-num">02</span><h3>The Factory runs</h3><p>Our build engine assembles the bones of your site overnight while our designers map your brand.</p></article>
-          <article class="day-card"><span class="day-num">03</span><h3>First draft — live</h3><p>You get a real link to a real working site. Not a sketch. Click it on your phone.</p></article>
-          <article class="day-card"><span class="day-num">04</span><h3>Your notes</h3><p>Tell us everything. Too bold, not bold enough, wrong photo — we want all of it.</p></article>
-          <article class="day-card"><span class="day-num">05</span><h3>Revisions</h3><p>Our designers and writers work through every note until it sounds like you on your best day.</p></article>
-          <article class="day-card"><span class="day-num">06</span><h3>Polish &amp; QA</h3><p>Speed-tuned, phone-tested, search-ready. We sweat the last 2% — that's where “fine” becomes “damn.”</p></article>
-          <article class="day-card day-launch"><span class="day-num">07</span><h3>Launch ☀</h3><p>Your domain goes live and the internet finally sees your business the way your best customers do.</p></article>
-        </div>
+<!-- ════════ 04 · SEVEN DAYS (vertical scrub) ════════ -->
+<section class="scene" data-scene="days" style="--h:340" id="days">
+  <div class="pin days-pin pin-clip">
+    <div class="days-head">
+      <div class="eyebrow">⏱ The sprint</div>
+      <div class="days-meter"><span id="daysMeterFill"></span></div>
+      <div class="days-count">DAY <b id="dayNum">01</b> / 07</div>
+    </div>
+    <div class="days-window">
+      <div class="days-track" id="daysTrack">
+        <div class="day-card"><div class="dn">01</div><div><h3>Kickoff</h3><p>You say go. We take your story and your best photos. That's everything we need from you today — the Factory already did the rest.</p></div></div>
+        <div class="day-card"><div class="dn">02</div><div><h3>The Factory runs</h3><p>The build engine assembles the bones of your site while our designers map your brand, your colors, your voice.</p></div></div>
+        <div class="day-card"><div class="dn">03</div><div><h3>First draft — live</h3><p>You get a real link to a real working site. Not a sketch, not a mood board. Click it on your phone.</p></div></div>
+        <div class="day-card"><div class="dn">04</div><div><h3>Your notes</h3><p>Tell us everything. Too bold, not bold enough, wrong photo — we want all of it, in one list.</p></div></div>
+        <div class="day-card"><div class="dn">05</div><div><h3>Revisions</h3><p>Designers and writers work through every note until it sounds like you on your best day.</p></div></div>
+        <div class="day-card"><div class="dn">06</div><div><h3>Polish &amp; QA</h3><p>Speed-tuned, phone-tested, search-ready. We sweat the last 2% — that's where "fine" becomes "damn."</p></div></div>
+        <div class="day-card"><div class="dn">07</div><div><h3>Launch ☀</h3><p>Your domain goes live and the internet finally sees your business the way your best customers already do.</p></div></div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
 
-    <!-- ============ SCENE 05 · THE STUDIO ============ -->
-    <section class="flow" id="team" data-scene="team">
-      <div class="team-head">
-        <p class="eyebrow">✎ THE HUMANS BEHIND IT</p>
-        <h2 class="display">Fast machines.<br><em>Careful people.</em></h2>
-        <p class="lede">The Factory gets your first draft standing in days. Then the studio team takes
-          over — and nothing ships until they’ve signed off. Every site crosses three desks
-          before you ever see it.</p>
+<!-- ════════ 05 · TEAM PASSES ════════ -->
+<section class="flow" data-scene="team" id="team">
+  <div class="team-wrap">
+    <div class="eyebrow reveal">✎ The humans behind it</div>
+    <h2 class="display reveal">Fast machines.<br><em>Careful people.</em></h2>
+    <p class="lede reveal">The Factory gets your first draft standing in days. Then the studio team takes over — and nothing ships until they've signed off. Every site crosses three desks before you ever see it.</p>
+    <div class="team-grid">
+      <div class="pass-card reveal" data-tilt>
+        <span class="pass-num">01 — THE DESIGN PASS</span>
+        <h3>Layout, color, type</h3>
+        <p>A designer reworks every screen around your brand — until it looks like you hired someone expensive. Because you did.</p>
+        <div class="pass-tags">LAYOUT · COLOR · TYPE</div>
       </div>
-      <div class="pass-grid">
-        <article class="pass-card reveal">
-          <span class="pass-num">01</span>
-          <h3>The design pass</h3>
-          <p>A designer reworks layout, color, and type around your brand — until it looks like
-            you hired someone expensive. Because you did.</p>
-          <span class="pass-tag">LAYOUT · COLOR · TYPE</span>
-        </article>
-        <article class="pass-card reveal">
-          <span class="pass-num">02</span>
-          <h3>The words pass</h3>
-          <p>A writer goes line by line until every headline sells and every sentence sounds like you
-            on your best day. No filler, no jargon.</p>
-          <span class="pass-tag">HEADLINES · STORY · CTA</span>
-        </article>
-        <article class="pass-card reveal">
-          <span class="pass-num">03</span>
-          <h3>The final eye</h3>
-          <p>A reviewer clicks every link, tests every screen size, and tries to break things on
-            purpose — so your customers can’t. Then we launch.</p>
-          <span class="pass-tag">QA · SPEED · MOBILE</span>
-        </article>
+      <div class="pass-card reveal" data-tilt>
+        <span class="pass-num">02 — THE WORDS PASS</span>
+        <h3>Every line, by hand</h3>
+        <p>A writer goes line by line until every headline sells and every sentence sounds like you on your best day. No filler, no jargon.</p>
+        <div class="pass-tags">HEADLINES · STORY · CTA</div>
       </div>
-      <p class="team-sign reveal">Nothing goes live until a person signs it. ☀</p>
-    </section>
+      <div class="pass-card reveal" data-tilt>
+        <span class="pass-num">03 — THE FINAL EYE</span>
+        <h3>Break it on purpose</h3>
+        <p>A reviewer clicks every link and tests every screen size, trying to break things on purpose — so your customers can't. Then we launch.</p>
+        <div class="pass-tags">QA · SPEED · MOBILE</div>
+      </div>
+    </div>
+    <div class="team-sign reveal">Nothing goes live until a person signs it. <b>☀</b></div>
+  </div>
+</section>
 
-    <!-- ============ SCENE 06 · NUMBERS ============ -->
-    <section class="scene" id="numbers" data-scene="numbers" style="--h:240">
-      <div class="pin">
-        <div class="numbers-wrap">
-          <p class="eyebrow">∑&ensp;THE SCOREBOARD</p>
-          <div class="numbers-grid">
-            <div class="num"><b><span data-count="7">0</span></b><p>days from kickoff<br>to launch</p></div>
-            <div class="num"><b><span data-count="3">0</span></b><p>human passes on<br>every single page</p></div>
-            <div class="num"><b><span data-count="100">0</span><i>%</i></b><p>shaped around your<br>business — not a theme</p></div>
-            <div class="num"><b><span data-count="24">0</span><i>/7</i></b><p>watched, backed up<br>&amp; protected after launch</p></div>
-          </div>
-        </div>
-      </div>
-    </section>
+<!-- ════════ 06 · NUMBERS ════════ -->
+<section class="scene" data-scene="numbers" style="--h:180">
+  <div class="pin">
+    <div class="numbers-grid">
+      <div class="num-cell"><div class="big"><span data-count="7">0</span></div><div class="lbl">days from kickoff<br>to launch</div></div>
+      <div class="num-cell"><div class="big"><span data-count="3">0</span></div><div class="lbl">human passes on<br>every single page</div></div>
+      <div class="num-cell"><div class="big"><span data-count="100">0</span><i>%</i></div><div class="lbl">built around your<br>business — not a theme</div></div>
+      <div class="num-cell"><div class="big"><span data-count="24">0</span><i>/7</i></div><div class="lbl">watched, backed up<br>&amp; protected after launch</div></div>
+    </div>
+  </div>
+</section>
 
-    <!-- ============ SCENE 07 · PLANS ============ -->
-    <section class="flow" id="pricing" data-scene="pricing">
-      <div class="pricing-head">
-        <p class="eyebrow">◈ TWO WAYS TO BUILD</p>
-        <h2 class="display">Pay for a website,<br><em>get a salesperson.</em></h2>
-        <p class="lede">One flat quote, agreed before we start — half to begin, half when you love it.
-          No hourly meters, no surprise invoices.</p>
-      </div>
-      <div class="pricing-grid">
-        <div class="price-card" data-tilt>
-          <div class="pc-tag">THE STARTER</div>
-          <h3>Essential</h3>
-          <div class="pc-price">5<span>&nbsp;custom pages</span></div>
-          <p class="pc-sub">a sharp, fast presence that makes the phone ring</p>
-          <ul>
-            <li>Home, about, services, contact — plus one page that’s all yours</li>
-            <li>Built for phones first, where your customers are</li>
-            <li>Contact &amp; lead-capture forms straight to your inbox</li>
-            <li>Professional copywriting included</li>
-            <li>SEO foundations — titles, meta, speed, alt text</li>
-            <li>Hosting &amp; SSL set up for you</li>
-            <li>30 days of post-launch support</li>
-          </ul>
-          <div class="pc-deal">☀ Comes with your first month of <b>Care Basic</b> — on us</div>
-          <a class="btn btn-ghost btn-wide magnetic" href="mailto:hello@sunblockstudio.com?subject=Essential%20build">Start Essential</a>
-        </div>
-        <div class="price-card price-featured" data-tilt>
-          <div class="pc-tag">THE FULL ENGINE</div>
-          <h3>Professional</h3>
-          <div class="pc-price">8<span>&nbsp;custom pages</span></div>
-          <p class="pc-sub">for businesses ready to take bookings and own their keywords</p>
-          <ul>
-            <li>Everything in Essential, with room to stretch</li>
-            <li>Online booking or scheduling, built in</li>
-            <li>Advanced SEO to compete for your search terms</li>
-            <li>Google Business Profile set up &amp; optimized</li>
-            <li>Analytics &amp; conversion tracking</li>
-            <li>Social media integration</li>
-            <li>60 days of post-launch support</li>
-          </ul>
-          <div class="pc-deal">☀ Comes with your first month of <b>Care Pro</b> — on us</div>
-          <a class="btn btn-solar btn-wide magnetic" href="mailto:hello@sunblockstudio.com?subject=Professional%20build">Start Professional</a>
-        </div>
-      </div>
+<!-- ════════ 07 · THE OFFER ════════ -->
+<section class="flow" data-scene="pricing" id="offer">
+  <div class="offer-wrap">
+    <div class="offer-head">
+      <div class="eyebrow reveal">◈ The offer</div>
+      <h2 class="display reveal">See it first.<br><em>Then decide.</em></h2>
+      <p class="lede reveal" style="margin-left:auto;margin-right:auto">We flipped how websites get bought. No deposits, no gambling on what you'll get. Your site exists before you spend a dollar.</p>
+    </div>
 
-      <div class="care-head">
-        <p class="eyebrow">♡ THEN WE KEEP IT ALIVE</p>
-        <h3 class="care-title">A website isn’t a launch.<br><em>It’s a heartbeat.</em></h3>
-      </div>
-      <div class="pricing-grid care-grid">
-        <div class="price-card care-card" data-tilt>
-          <div class="pc-tag">CARE BASIC</div>
-          <h3>Watched &amp; safe</h3>
-          <ul>
-            <li>Daily automated backups</li>
-            <li>Uptime monitoring — we know before you do</li>
-            <li>Security &amp; software updates</li>
-            <li>Monthly speed check</li>
-            <li>Monthly email check-in</li>
-          </ul>
-        </div>
-        <div class="price-card care-card" data-tilt>
-          <div class="pc-tag">CARE PRO</div>
-          <h3>Watched &amp; growing</h3>
-          <ul>
-            <li>Everything in Care Basic</li>
-            <li>2 hours of edits, every month</li>
-            <li>Monthly Google Business post</li>
-            <li>Keyword ranking + traffic reports</li>
-            <li>Priority support</li>
-            <li>A free new page every quarter</li>
-          </ul>
-        </div>
-      </div>
-      <p class="pricing-note">Exact quote on a 15-minute discovery call. We’ll recommend the right
-        fit — no pressure, no homework.</p>
-    </section>
+    <div class="guarantee reveal" data-tilt>
+      <h3>If you don't love it, <em>you don't pay.</em><br>We build it first. That's the whole deal.</h3>
+      <p>Nothing down. Your first month is free. And after launch we keep working on it until you love it — you're never locked into something that isn't earning its keep. After six months, cancel anytime.</p>
+    </div>
 
-    <!-- ============ SCENE 08 · SUNRISE / CONTACT ============ -->
-    <section class="scene" id="contact" data-scene="outro" style="--h:200">
-      <div class="pin">
-        <div class="outro-inner">
-          <div class="outro-copy">
-            <p class="eyebrow">☀&ensp;YOUR TURN IN THE LIGHT</p>
-            <h2 class="outro-title">Let's build<br><em>yours.</em></h2>
-            <p class="outro-note">Tell us about your business — we'll come back within one
-              business day with a plan and a flat quote.</p>
-            <a class="outro-mail magnetic" href="mailto:hello@sunblockstudio.com">hello@sunblockstudio.com</a>
-          </div>
-          <form class="inquiry" id="inquiry">
-            <p class="iq-label">✉&ensp;REQUEST YOUR BUILD</p>
-            <div class="iq-row">
-              <input type="text" name="name" placeholder="Your name *" required autocomplete="name">
-              <input type="text" name="business" placeholder="Business name *" required autocomplete="organization">
-            </div>
-            <div class="iq-row">
-              <input type="email" name="email" placeholder="Email *" required autocomplete="email">
-              <input type="tel" name="phone" placeholder="Phone (optional)" autocomplete="tel">
-            </div>
-            <select name="interest" required>
-              <option value="" disabled selected>What are you interested in? *</option>
-              <option>Essential build — 5 pages</option>
-              <option>Professional build — 8 pages</option>
-              <option>Care plan for an existing site</option>
-              <option>Not sure yet — let&#8217;s talk</option>
-            </select>
-            <textarea name="message" rows="4" placeholder="Tell us about your business — what you do, what you need, and when you want it live."></textarea>
-            <button class="btn btn-solar btn-wide magnetic" type="submit">Send my request ☀</button>
-            <p class="iq-hint">Opens your email app with everything filled in — one tap to send.</p>
-          </form>
-        </div>
-        <footer class="footer">
-          <span>© <span id="yr">2026</span> Sunblock Studio · Miami, FL</span>
-          <span class="footer-tag">BUILT TO BRING YOU BUSINESS</span>
-          <span>sunblockstudio.com</span>
-        </footer>
+    <div class="price-grid">
+      <div class="price-card reveal">
+        <div class="pc-tag">THE STARTER</div>
+        <h3>The Local Site</h3>
+        <div class="pc-price"><i>$</i>149<span>/month</span></div>
+        <div class="pc-terms">$0 DOWN · FIRST MONTH FREE</div>
+        <ul>
+          <li>5 custom pages — home, services, reviews, area, contact</li>
+          <li>Built for phones first, where your customers are</li>
+          <li>Professional copywriting included</li>
+          <li>Google Business Profile set up for you</li>
+          <li>Hosting, security &amp; daily backups — handled</li>
+          <li>Monthly edits so it never goes stale</li>
+        </ul>
+        <a class="btn btn-ghost btn-wide magnetic" href="#contact" data-jump>Start with Local</a>
       </div>
-    </section>
+      <div class="price-card price-featured reveal">
+        <div class="pc-tag">THE FULL ENGINE</div>
+        <h3>The Growth Site</h3>
+        <div class="pc-price"><i>$</i>249<span>/month</span></div>
+        <div class="pc-terms">$0 DOWN · FIRST MONTH FREE</div>
+        <ul>
+          <li>Everything in Local, with 8 pages and room to stretch</li>
+          <li>Online booking or scheduling, built in</li>
+          <li>Advanced SEO to compete for your search terms</li>
+          <li>Call &amp; lead tracking — see exactly what the site brings you</li>
+          <li>Monthly Google Business post + ranking report</li>
+          <li>3 hours of edits every month, priority support</li>
+        </ul>
+        <a class="btn btn-solar btn-wide magnetic" href="#contact" data-jump>Start with Growth</a>
+      </div>
+    </div>
+    <p class="price-note reveal">Rather own it outright? <b>$1,200 once</b>, plus $79/mo to keep it hosted, safe, and maintained.<br>Either way it starts the same: <b>we build it, you look at it, then you decide.</b></p>
+  </div>
+</section>
 
-  </main>
+<!-- ════════ 08 · OUTRO / CONTACT ════════ -->
+<section class="scene" data-scene="outro" style="--h:220" id="contact">
+  <div class="pin">
+    <div class="outro-inner">
+      <div class="outro-copy">
+        <div class="eyebrow">☀ Your turn in the light</div>
+        <h2 class="display">Let's build<br><em>yours.</em></h2>
+        <p class="lede">Tell us about your business. Within one business day you'll hear back — and within a week you could be looking at your own site, live, before you've spent anything.</p>
+      </div>
+      <form class="iq" id="inquiry">
+        <div><label for="f-name">Your name</label><input id="f-name" name="name" required autocomplete="name"></div>
+        <div><label for="f-biz">Business name</label><input id="f-biz" name="business" required></div>
+        <div><label for="f-email">Email</label><input id="f-email" name="email" type="email" required autocomplete="email"></div>
+        <div><label for="f-phone">Phone (optional)</label><input id="f-phone" name="phone" type="tel" autocomplete="tel"></div>
+        <div><label for="f-int">What are you interested in?</label>
+          <select id="f-int" name="interest">
+            <option>Build my free preview</option>
+            <option>The Local Site — $149/mo</option>
+            <option>The Growth Site — $249/mo</option>
+            <option>I have a site that needs rescuing</option>
+            <option>Not sure yet — let's talk</option>
+          </select>
+        </div>
+        <div><label for="f-msg">Tell us about your business</label><textarea id="f-msg" name="message" rows="3"></textarea></div>
+        <button class="btn btn-solar magnetic" type="submit">Send my request ☀</button>
+        <div class="iq-hint">Opens your email app with everything filled in — one tap to send.</div>
+      </form>
+    </div>
+  </div>
+</section>
 
-  <script src="main.js"></script>
+<footer class="footer">
+  <span>© <span id="yr"></span> SUNBLOCK STUDIO</span>
+  <span>BUILT TO BRING YOU BUSINESS</span>
+  <a href="mailto:hello@sunblockstudio.com">HELLO@SUNBLOCKSTUDIO.COM</a>
+</footer>
+
+<script>
+/* ════════════════════════════════════════════════════════════
+   SOLAR CINEMA ENGINE — DAYLIGHT CUT
+   Same playhead, same choreography. The film is now shot in day.
+   ════════════════════════════════════════════════════════════ */
+(() => {
+"use strict";
+
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const lerp  = (a, b, t) => a + (b - a) * t;
+const smooth = t => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+const bell = (p, inEnd = .25, outStart = .75) =>
+  smooth(p / inEnd) * (1 - smooth((p - outStart) / (1 - outStart)));
+
+/* ── scroll state (eased playhead) ── */
+let scrollY = window.scrollY, eased = scrollY;
+let vw = innerWidth, vh = innerHeight;
+addEventListener("scroll", () => { scrollY = window.scrollY; }, { passive: true });
+
+/* ── scene registry ── */
+const scenes = {};
+document.querySelectorAll("[data-scene]").forEach(el => {
+  scenes[el.dataset.scene] = { el, p: 0, vis: 0 };
+});
+function measure() {
+  vw = innerWidth; vh = innerHeight;
+  for (const k in scenes) {
+    const s = scenes[k], r = s.el.getBoundingClientRect();
+    s.top = r.top + window.scrollY;
+    s.h = s.el.offsetHeight;
+  }
+}
+function updateProgress() {
+  for (const k in scenes) {
+    const s = scenes[k];
+    const span = Math.max(1, s.h - vh);
+    s.p = clamp((eased - s.top) / span, 0, 1);
+    s.vis = clamp((eased + vh - s.top) / (s.h + vh), 0, 1);
+    s.on = eased + vh > s.top && eased < s.top + s.h;
+  }
+}
+
+/* ════════ LAYER 1 — WebGL : the sun, the sky, the clouds ════════ */
+const glCanvas = document.getElementById("gl");
+let gl = null, prog = null, uni = {};
+
+const VERT = `attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}`;
+const FRAG = `
+precision highp float;
+uniform vec2  uRes;
+uniform float uTime;
+uniform vec2  uSunPos;   // centered coords, y up
+uniform float uSunR;
+uniform float uBreak;    // 0 calm -> 1 blazing corona
+uniform float uHue;      // 0 golden hour -> 1 clear blue noon
+uniform float uNebula;   // cloud cover
+uniform float uDim;
+
+float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float noise(vec2 p){
+  vec2 i = floor(p), f = fract(p);
+  f = f * f * (3. - 2. * f);
+  return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x),
+             mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y);
+}
+float fbm(vec2 p){
+  float v = 0., a = .5;
+  for (int i = 0; i < 5; i++){ v += a * noise(p); p = p * 2.03 + 17.1; a *= .5; }
+  return v;
+}
+
+void main(){
+  vec2 uv = (gl_FragCoord.xy - .5 * uRes) / uRes.y;
+  float t = uTime;
+
+  // ─ the living sky: warm cream horizon rising to soft blue ─
+  float g = clamp(uv.y * 1.15 + .55, 0., 1.);
+  vec3 horizonWarm = vec3(1.00, .93, .80);   // golden-hour cream
+  vec3 horizonCool = vec3(.94, .96, .96);    // clear-day pale
+  vec3 zenithWarm  = vec3(.68, .82, .93);    // morning blue
+  vec3 zenithCool  = vec3(.55, .77, .93);    // noon blue
+  vec3 horizon = mix(horizonWarm, horizonCool, uHue);
+  vec3 zenith  = mix(zenithWarm,  zenithCool,  uHue);
+  vec3 col = mix(horizon, zenith, smoothstep(0., 1., g));
+
+  // warm bloom around the horizon line
+  col += vec3(.10, .05, .0) * exp(-abs(uv.y + .18) * 5.) * (1. - uHue * .6);
+
+  // ─ drifting clouds (was: nebula) — two soft fbm banks ─
+  float cl1 = fbm(uv * vec2(1.6, 3.1) + vec2(t * .012, 2.7));
+  float cl2 = fbm(uv * vec2(2.6, 5.2) + vec2(-t * .008, 9.1));
+  float clouds = smoothstep(.46, .78, cl1 * .65 + cl2 * .45);
+  vec3 cloudCol = mix(vec3(1.0, .98, .94), vec3(1.), uHue);
+  col = mix(col, cloudCol, clouds * .55 * uNebula);
+  // cloud underside shading for depth
+  col -= vec3(.05, .04, .02) * smoothstep(.55, .85, cl1) * uNebula * (1. - clouds * .5);
+
+  // ─ floating light motes (was: stars) — faint, daylight-safe ─
+  for (int l = 0; l < 2; l++){
+    float fl = float(l);
+    vec2 sp = uv * (13. + fl * 8.) + vec2(fl * 7.3, t * .01 * (fl + 1.));
+    vec2 cell = floor(sp);
+    float h = hash(cell);
+    if (h > .955){
+      vec2 c = fract(sp) - .5;
+      float mote = exp(-dot(c, c) * 340.);
+      float tw = .5 + .5 * sin(t * (1. + h * 3.) + h * 40.);
+      col += vec3(1., .92, .7) * mote * tw * .12;
+    }
+  }
+
+  // ─ the sun ─
+  vec2 p = uv - uSunPos;
+  float d = length(p);
+  float ang = atan(p.y, p.x);
+  vec2 circ = vec2(cos(ang), sin(ang));
+  float wob = fbm(circ * 1.9 + 9. + vec2(t * .1, -t * .13)) - .5;
+  float r = uSunR * (1. + wob * (.04 + uBreak * .12));
+  float rr = max(r, .04);
+
+  vec3 coreWarm = vec3(1.00, .98, .90);
+  vec3 bodyWarm = vec3(1.00, .72, .30);
+  vec3 coreCool = vec3(1.00, 1.00, .96);
+  vec3 bodyCool = vec3(1.00, .84, .48);
+  vec3 core = mix(coreWarm, coreCool, uHue);
+  vec3 body = mix(bodyWarm, bodyCool, uHue);
+
+  // corona — additive warmth over the sky
+  float out_ = max(d - r, 0.);
+  float glow = exp(-out_ / (rr * .5));
+  float flame = fbm(circ * 2.6 + vec2(t * .18, d * 3. - t * .27)) * exp(-out_ / (rr * (.22 + uBreak * .5)));
+  col += body * glow * .40;
+  col += mix(body, core, .5) * flame * (.30 + uBreak * .55);
+
+  // disc: bright surface with soft limb + gentle granulation
+  float disc = smoothstep(r, r - .008, d);
+  if (disc > 0.){
+    vec2 q = p / rr;
+    float gran = fbm(q * 3.2 + t * .12);
+    vec3 surf = mix(body, core, smoothstep(1., 0., d / rr) * .85 + gran * .2);
+    float crack = 1. - uBreak * .18 * smoothstep(.5, .64, fbm(q * 6.5 + t * .07));
+    col = mix(col, surf * crack + core * .06, disc);
+  }
+
+  // wide atmospheric haze so the sun warms the whole sky around it
+  col += body * exp(-out_ / (rr * 2.6)) * .10;
+
+  // gentle daylight vignette — barely-there edge softening
+  col *= 1. - dot(uv, uv) * .10;
+  col *= uDim;
+
+  // soft filmic rolloff to keep highlights creamy, not clipped
+  col = col / (1. + max(col - 1., 0.) * .6);
+  gl_FragColor = vec4(col, 1.);
+}`;
+
+function initGL() {
+  gl = glCanvas.getContext("webgl", { antialias: false, alpha: false });
+  if (!gl) return;
+  const sh = (type, src) => {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.error(gl.getShaderInfoLog(s)); return null; }
+    return s;
+  };
+  const vs = sh(gl.VERTEX_SHADER, VERT), fs = sh(gl.FRAGMENT_SHADER, FRAG);
+  if (!vs || !fs) { gl = null; return; }
+  prog = gl.createProgram();
+  gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, "a");
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  ["uRes","uTime","uSunPos","uSunR","uBreak","uHue","uNebula","uDim"]
+    .forEach(n => uni[n] = gl.getUniformLocation(prog, n));
+}
+
+/* ════════ LAYER 2 — 2D canvas : the particle network ════════
+   Same four modes: orbit ▸ plexus ▸ lattice ▸ stream.
+   Ink is now deep amber → sky blue so it reads on daylight. */
+const netCanvas = document.getElementById("net");
+const ctx = netCanvas.getContext("2d");
+const N = 130;
+const parts = [];
+let seedI = 1;
+const srand = () => { seedI = (seedI * 16807) % 2147483647; return (seedI - 1) / 2147483646; };
+
+for (let i = 0; i < N; i++) {
+  parts.push({
+    x: srand(), y: srand(),
+    sx: srand(), sy: srand(),
+    a0: srand() * Math.PI * 2,
+    rr: .55 + srand() * 1.1,
+    spd: .12 + srand() * .3,
+    lane: srand(), ph: srand() * Math.PI * 2,
+    sz: .8 + srand() * 1.6,
+  });
+}
+
+function browserTarget(i, w, h) {
+  const W = Math.min(w * .68, 980), H = Math.min(W * .6, h * .66);
+  const x0 = w / 2 - W / 2, y0 = h * .5 - H / 2, bar = H * .15;
+  let x, y;
+  if (i < 64) {
+    const t = (i / 64) * 4, s = Math.floor(t), f = t - s;
+    if (s === 0)      { x = x0 + f * W; y = y0; }
+    else if (s === 1) { x = x0 + W;     y = y0 + f * H; }
+    else if (s === 2) { x = x0 + W - f * W; y = y0 + H; }
+    else              { x = x0;         y = y0 + H - f * H; }
+  } else if (i < 80) { x = x0 + ((i - 64) / 15) * W; y = y0 + bar; }
+  else if (i < 83)   { x = x0 + W * .05 + (i - 80) * W * .035; y = y0 + bar * .5; }
+  else if (i < 97)   { x = x0 + W * .1 + ((i - 83) / 13) * W * .56; y = y0 + bar + H * .2; }
+  else if (i < 111)  { x = x0 + W * .1 + ((i - 97) / 13) * W * .8; y = y0 + bar + H * .42; }
+  else if (i < 123)  { x = x0 + W * .1 + ((i - 111) / 11) * W * .68; y = y0 + bar + H * .56; }
+  else               { x = x0 + W * .1 + ((i - 123) / (N - 124)) * W * .26; y = y0 + bar + H * .76; }
+  return { x: x / w, y: y / h };
+}
+
+function drawNet(time, V) {
+  ctx.clearRect(0, 0, vw, vh);
+  const { wOrbit, wPlexus, wLattice, wStream, netAlpha, hue, sunPx } = V;
+  if (netAlpha <= .01) return;
+
+  // daylight ink: deep amber → sky blue
+  const warm = [180, 83, 9], cool = [30, 110, 160];
+  const cr = Math.round(lerp(warm[0], cool[0], hue));
+  const cg = Math.round(lerp(warm[1], cool[1], hue));
+  const cb = Math.round(lerp(warm[2], cool[2], hue));
+
+  const px = [], py = [];
+  for (let i = 0; i < N; i++) {
+    const p = parts[i];
+    const oa = p.a0 + time * p.spd * .25;
+    const orbR = (sunPx.r / vh) * p.rr * 2.2 + .02;
+    const ox = sunPx.x / vw + Math.cos(oa) * orbR * (vh / vw);
+    const oy = sunPx.y / vh + Math.sin(oa) * orbR;
+
+    const plx = p.sx + Math.sin(time * .25 + p.ph) * .015;
+    const ply = p.sy + Math.cos(time * .21 + p.ph * 1.7) * .015;
+
+    const lt = browserTarget(i, vw, vh);
+    const ltx = lt.x + Math.sin(time * .6 + i) * .0015;
+    const lty = lt.y + Math.cos(time * .5 + i * 1.3) * .0015;
+
+    const stx = ((p.lane * 1.4 + time * .045 * (0.6 + p.spd)) % 1.2) - .1;
+    const sty = .18 + p.sy * .64 + Math.sin(stx * 9 + p.ph) * .04;
+
+    const tw = wOrbit + wPlexus + wLattice + wStream || 1;
+    const tx = (ox * wOrbit + plx * wPlexus + ltx * wLattice + stx * wStream) / tw;
+    const ty = (oy * wOrbit + ply * wPlexus + lty * wLattice + sty * wStream) / tw;
+
+    let k = wStream / tw > .6 ? .35 : wLattice / tw > .5 ? .13 : .07;
+    if (V.snap) k = Math.max(k, .45);
+    p.x = lerp(p.x, tx, k);
+    p.y = lerp(p.y, ty, k);
+    px[i] = p.x * vw; py[i] = p.y * vh;
+  }
+
+  const linkW = Math.max(wPlexus, wLattice);
+  if (linkW > .02) {
+    const maxD = lerp(0, Math.min(vw, vh) * .14, linkW);
+    const bw = Math.min(vw * .68, 980);
+    ctx.lineWidth = 1;
+    for (let i = 0; i < N; i++) {
+      for (let j = i + 1; j < N; j++) {
+        const dx = px[i] - px[j], dy = py[i] - py[j];
+        const d2 = dx * dx + dy * dy;
+        const md = wLattice > .3 ? (bw * .075) * (bw * .075) : maxD * maxD;
+        if (d2 < md) {
+          const a = (1 - d2 / md) * (.30 + .32 * wLattice) * linkW * netAlpha;
+          if (a > .01) {
+            ctx.strokeStyle = `rgba(${cr},${cg},${cb},${a})`;
+            ctx.beginPath(); ctx.moveTo(px[i], py[i]); ctx.lineTo(px[j], py[j]); ctx.stroke();
+          }
+        }
+      }
+    }
+  }
+
+  for (let i = 0; i < N; i++) {
+    const p = parts[i];
+    const tw2 = .55 + .45 * Math.sin(time * 1.4 + p.ph * 5);
+    const a = netAlpha * (.45 + .5 * tw2);
+    const s = p.sz * (1 + wStream * .4);
+    ctx.fillStyle = `rgba(${cr},${cg},${cb},${a})`;
+    ctx.beginPath(); ctx.arc(px[i], py[i], s, 0, 7); ctx.fill();
+    if (p.sz > 2) {
+      ctx.fillStyle = `rgba(${cr},${cg},${cb},${a * .12})`;
+      ctx.beginPath(); ctx.arc(px[i], py[i], s * 4, 0, 7); ctx.fill();
+    }
+  }
+}
+
+/* ════════ THE SCRIPT — scroll → visual keyframes ════════
+   Identical choreography to the original cut. */
+function computeVisual() {
+  const S = scenes;
+  const V = {
+    sun: { x: 0, y: .02, r: .30 },
+    brk: 0, hue: 0, nebula: .5, dim: 1,
+    wOrbit: 0, wPlexus: 0, wLattice: 0, wStream: 0, netAlpha: 0,
+  };
+  const hero = S.hero, sig = S.signal, fac = S.factory, days = S.days,
+        team = S.team, nums = S.numbers, pri = S.pricing, out = S.outro;
+
+  if (hero) {
+    const p = hero.p;
+    V.sun.r = lerp(.30, .24, p);
+    V.sun.y = lerp(-.02, .10, p);
+    V.brk = p * .35;
+    V.wOrbit = 1; V.netAlpha = lerp(.35, .6, p);
+  }
+  if (sig && sig.on) {
+    const p = sig.p;
+    V.sun.r = lerp(.24, .085, smooth(p * 1.4));
+    V.sun.y = lerp(.10, .30, p);
+    V.sun.x = lerp(0, .32, smooth(p));
+    V.brk = lerp(.35, 1, smooth(p * 2));
+    V.nebula = lerp(.5, .85, p);
+    V.wOrbit = 1 - smooth(p * 2.2);
+    V.wPlexus = smooth(p * 1.8);
+    V.netAlpha = lerp(.6, 1, p);
+  }
+  if (fac && fac.on) {
+    const p = fac.p;
+    V.sun.r = .085; V.sun.x = .32; V.sun.y = .30; V.brk = lerp(1, .3, p);
+    V.wOrbit = 0;
+    V.wPlexus = 1 - smooth(p * 2.4);
+    V.wLattice = smooth(p * 2);
+    V.netAlpha = .8;
+    V.nebula = .55;
+  }
+  if (days && days.on) {
+    const p = days.p;
+    V.hue = bell(p, .2, .85) * .85;
+    V.sun.r = lerp(.085, .05, smooth(p * 3));
+    V.sun.x = .32; V.sun.y = .34; V.brk = .25;
+    V.wOrbit = 0;
+    V.wLattice = 1 - smooth(p * 3);
+    V.wStream = smooth(p * 2.5) * (1 - smooth((p - .88) / .12));
+    V.netAlpha = .85;
+    V.nebula = .8;
+  }
+  if (team && team.on) {
+    const t = smooth(clamp((eased + vh - team.top) / team.h, 0, 1));
+    V.wOrbit = 0; V.wPlexus = .5; V.netAlpha = .4;
+    V.nebula = lerp(.8, .6, t);
+    V.sun.r = .05; V.sun.x = lerp(.32, -.38, t); V.sun.y = .34;
+    V.hue = lerp(V.hue, .25, t);
+  }
+  if (nums && nums.on) {
+    const p = nums.p;
+    V.hue = lerp(.25, 0, smooth(p));
+    V.sun.r = lerp(.05, .1, p); V.sun.x = -.38; V.sun.y = .34;
+    V.wOrbit = 0; V.wPlexus = .5; V.netAlpha = .45; V.brk = .2;
+  }
+  if (pri && pri.on) {
+    V.sun.r = .1; V.sun.x = -.38; V.sun.y = .34;
+    V.wOrbit = 0; V.wPlexus = .4; V.netAlpha = .35; V.hue = 0;
+  }
+  if (out && out.on) {
+    const p = out.p;
+    const t = smooth(p);
+    const e = smooth(clamp((eased + vh - out.top) / vh, 0, 1));
+    V.sun.x = lerp(-.38, lerp(-.38, 0, t), e);
+    V.sun.y = lerp(.34, lerp(-.9, -.42, t), e);
+    V.sun.r = lerp(.1, lerp(.2, .58, t), e);
+    V.brk = .12; V.hue = 0;
+    V.nebula = lerp(.6, .35, t);
+    V.wOrbit = t; V.wPlexus = 1 - t; V.netAlpha = .5;
+  }
+
+  V.sunPx = {
+    x: vw / 2 + V.sun.x * vh,
+    y: vh / 2 - V.sun.y * vh,
+    r: V.sun.r * vh,
+  };
+  return V;
+}
+
+/* ════════ DOM CHOREOGRAPHY ════════ */
+const heroInner = document.querySelector(".hero-inner");
+const scrollCue = document.querySelector(".scroll-cue");
+const beats = [...document.querySelectorAll(".beat")];
+const feats = [...document.querySelectorAll(".factory-feats li")];
+const daysTrack = document.getElementById("daysTrack");
+const daysFill = document.getElementById("daysMeterFill");
+const dayNum = document.getElementById("dayNum");
+const termBody = document.getElementById("termBody");
+const counters = [...document.querySelectorAll("[data-count]")];
+const outroInner = document.querySelector(".outro-inner");
+
+/* terminal script — scrub-typed by scroll */
+const TERM_LINES = [
+  ['t-cmd', '$ sunblock factory --new "your-business"'],
+  ['t-dim', ''],
+  ['',      '  ▸ scanning your business online ........ <ok>done</ok>'],
+  ['',      '  ▸ pulling photos, reviews, brand ....... <ok>done</ok>'],
+  ['',      '  ▸ assembling pages'],
+  ['t-dim', '      home · services · gallery'],
+  ['t-dim', '      reviews · contact .................. <ok>done</ok>'],
+  ['',      '  ▸ tuning for phones &amp; speed ............ <ok>done</ok>'],
+  ['',      '  ▸ deploying your preview ............... <key>live</key>'],
+  ['',      '  ▸ handing off to the studio team ....... <ok>on it</ok>'],
+  ['t-dim', '      design pass · words pass · final eye'],
+  ['t-dim', ''],
+  ['t-key', '  → your site exists before you decide. ☀'],
+];
+const TERM_PLAIN = TERM_LINES.map(l => l[1].replace(/<\/?\w+>/g, ""));
+const TERM_TOTAL = TERM_PLAIN.reduce((s, l) => s + l.length + 1, 0);
+
+function renderTerminal(chars) {
+  let left = chars, html = "";
+  for (let i = 0; i < TERM_LINES.length; i++) {
+    if (left <= 0) break;
+    const plain = TERM_PLAIN[i];
+    const take = Math.min(plain.length, left);
+    left -= take + 1;
+    let text = plain.slice(0, take);
+    if (take === plain.length) {
+      text = TERM_LINES[i][1]
+        .replace(/<ok>/g, '<span class="t-ok">').replace(/<\/ok>/g, "</span>")
+        .replace(/<key>/g, '<span class="t-key">').replace(/<\/key>/g, "</span>");
+    }
+    const cls = TERM_LINES[i][0];
+    html += cls ? `<span class="${cls}">${text}</span>\n` : text + "\n";
+  }
+  termBody.innerHTML = html + '<span class="t-cursor"></span>';
+}
+
+/* days: vertical scrub distance */
+let trackH = 0;
+function measureDOM() {
+  const win = document.querySelector(".days-window");
+  trackH = daysTrack.scrollHeight - (win ? win.offsetHeight : vh * .6);
+  trackH = Math.max(0, trackH);
+}
+
+let lastTermChars = -1, lastDay = "";
+function choreograph(V) {
+  if (scenes.hero) {
+    const p = scenes.hero.p;
+    heroInner.style.transform = `translateY(${-p * 16}vh) scale(${1 - p * .08})`;
+    heroInner.style.opacity = 1 - smooth(p * 1.6);
+    scrollCue.style.opacity = 1 - smooth(p * 4);
+  }
+  if (scenes.signal) {
+    const p = scenes.signal.p;
+    beats.forEach((b, i) => {
+      const c = (i + .5) / 3;
+      const d = Math.abs(p - c) * 3;
+      const o = clamp(1.15 - d * 2.3, 0, 1);
+      b.style.opacity = o;
+      b.style.transform = `translateY(${(p - c) * -120}px) scale(${.96 + o * .04})`;
+    });
+  }
+  if (scenes.factory && scenes.factory.on) {
+    const p = scenes.factory.p;
+    const chars = Math.floor(smooth(clamp(p * 1.25, 0, 1)) * TERM_TOTAL);
+    if (chars !== lastTermChars) { renderTerminal(chars); lastTermChars = chars; }
+    feats.forEach((f, i) => f.classList.toggle("is-on", p > .22 + i * .2));
+  }
+  // seven days: VERTICAL scrub — the track glides up with your scroll
+  if (scenes.days) {
+    const p = scenes.days.p;
+    daysTrack.style.transform = `translateY(${-smooth(p) * trackH}px)`;
+    daysFill.style.width = (p * 100).toFixed(2) + "%";
+    const d = String(clamp(Math.ceil(p * 7), 1, 7)).padStart(2, "0");
+    if (d !== lastDay) { dayNum.textContent = d; lastDay = d; }
+  }
+  if (scenes.numbers && scenes.numbers.on) {
+    const p = smooth(clamp(scenes.numbers.p * 1.6, 0, 1));
+    counters.forEach(c => { c.textContent = Math.round(+c.dataset.count * p); });
+  }
+  if (scenes.outro && scenes.outro.on) {
+    const p = scenes.outro.p;
+    outroInner.style.transform = `translateY(${(1 - smooth(p * 1.4)) * 60}px)`;
+    outroInner.style.opacity = smooth(p * 2);
+  }
+}
+
+/* reveal-on-view */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); }
+}), { threshold: .15 });
+document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+document.querySelectorAll(".pass-card").forEach((el, i) =>
+  el.style.transitionDelay = i * 120 + "ms");
+
+/* tilt cards */
+if (matchMedia("(pointer:fine)").matches) {
+  document.querySelectorAll("[data-tilt]").forEach(card => {
+    card.addEventListener("mousemove", e => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - .5;
+      const y = (e.clientY - r.top) / r.height - .5;
+      card.style.transform = `perspective(900px) rotateY(${x * 7}deg) rotateX(${-y * 7}deg) translateY(-6px)`;
+    });
+    card.addEventListener("mouseleave", () => { card.style.transform = ""; });
+  });
+}
+
+/* magnetic buttons + custom cursor */
+const cursor = document.querySelector(".cursor");
+let mx = vw / 2, my = vh / 2, cx = mx, cy = my;
+if (matchMedia("(pointer:fine)").matches) {
+  addEventListener("mousemove", e => { mx = e.clientX; my = e.clientY; });
+  document.querySelectorAll("a,button,.pass-card,.price-card").forEach(el => {
+    el.addEventListener("mouseenter", () => cursor.classList.add("is-hot"));
+    el.addEventListener("mouseleave", () => cursor.classList.remove("is-hot"));
+  });
+  document.querySelectorAll(".magnetic").forEach(el => {
+    el.addEventListener("mousemove", e => {
+      const r = el.getBoundingClientRect();
+      el.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .18}px,${(e.clientY - r.top - r.height / 2) * .25}px)`;
+    });
+    el.addEventListener("mouseleave", () => { el.style.transform = ""; });
+  });
+}
+
+/* nav hide/show */
+const nav = document.getElementById("nav");
+let lastSY = 0;
+addEventListener("scroll", () => {
+  const y = window.scrollY;
+  nav.classList.toggle("is-hidden", y > lastSY && y > vh * .8);
+  lastSY = y;
+}, { passive: true });
+
+/* smooth anchor jumps */
+document.querySelectorAll("[data-jump]").forEach(a =>
+  a.addEventListener("click", e => {
+    const t = document.querySelector(a.getAttribute("href"));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: "smooth" }); }
+  }));
+
+document.getElementById("yr").textContent = new Date().getFullYear();
+
+/* inquiry form → prefilled email */
+const inquiry = document.getElementById("inquiry");
+if (inquiry) inquiry.addEventListener("submit", e => {
+  e.preventDefault();
+  const f = new FormData(inquiry);
+  const get = k => (f.get(k) || "").toString().trim();
+  const subject = `Website request — ${get("business")}`;
+  const body = [
+    `Name: ${get("name")}`,
+    `Business: ${get("business")}`,
+    `Email: ${get("email")}`,
+    get("phone") && `Phone: ${get("phone")}`,
+    `Interested in: ${get("interest")}`,
+    "",
+    get("message"),
+  ].filter(Boolean).join("\n");
+  location.href = "mailto:hello@sunblockstudio.com?subject=" +
+    encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  inquiry.querySelector(".iq-hint").textContent =
+    "Your email app just opened with everything filled in — hit send and you're done ☀";
+});
+
+/* ════════ MAIN LOOP ════════ */
+function resize() {
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  vw = innerWidth; vh = innerHeight;
+  glCanvas.width = vw * (reduced ? 1 : dpr * .75);
+  glCanvas.height = vh * (reduced ? 1 : dpr * .75);
+  netCanvas.width = vw * dpr; netCanvas.height = vh * dpr;
+  netCanvas.getContext("2d").setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (gl) gl.viewport(0, 0, glCanvas.width, glCanvas.height);
+  measure(); measureDOM();
+}
+
+const t0 = performance.now();
+let lastNow = t0, snapLeft = 0;
+function frame(now) {
+  const time = (now - t0) / 1000;
+  const dt = (now - lastNow) / 1000;
+  lastNow = now;
+  const gap = scrollY - eased;
+  if (reduced) {
+    eased = scrollY;
+  } else if (Math.abs(gap) > vh * 1.2) {
+    eased = scrollY;
+    snapLeft = 30;
+  } else {
+    eased += gap * (1 - Math.pow(0.9965, Math.min(dt, .1) * 1700));
+    if (snapLeft > 0) snapLeft--;
+  }
+  updateProgress();
+  const V = computeVisual();
+  V.snap = snapLeft > 0;
+
+  if (gl) {
+    gl.uniform2f(uni.uRes, glCanvas.width, glCanvas.height);
+    gl.uniform1f(uni.uTime, reduced ? 0 : time);
+    gl.uniform2f(uni.uSunPos, V.sun.x, V.sun.y);
+    gl.uniform1f(uni.uSunR, V.sun.r);
+    gl.uniform1f(uni.uBreak, V.brk);
+    gl.uniform1f(uni.uHue, V.hue);
+    gl.uniform1f(uni.uNebula, V.nebula);
+    gl.uniform1f(uni.uDim, V.dim);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  if (!reduced) drawNet(time, V);
+  choreograph(V);
+
+  if (matchMedia("(pointer:fine)").matches) {
+    cx += (mx - cx) * .2; cy += (my - cy) * .2;
+    cursor.style.left = cx + "px"; cursor.style.top = cy + "px";
+  }
+  requestAnimationFrame(frame);
+}
+
+/* boot */
+initGL();
+resize();
+addEventListener("resize", resize);
+renderTerminal(0);
+requestAnimationFrame(frame);
+
+const loader = document.getElementById("loader");
+addEventListener("load", () => setTimeout(() => loader.classList.add("is-done"), 600));
+setTimeout(() => loader.classList.add("is-done"), 2600);
+
+})();
+</script>
 </body>
 </html>
