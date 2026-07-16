@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sunblock Studio — Owner Console</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Space+Grotesk:wght@400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#171310; --card:#211B15; --card-2:#2A221A; --ink:#F4EDE2;
+  --ink-dim:rgba(244,237,226,.62); --ink-faint:rgba(244,237,226,.38);
+  --solar:#F59E1D; --solar-hot:#E86A24; --good:#4ADE80; --bad:#FF8A7A;
+  --sky:#5FB7DB; --line:rgba(245,158,29,.18);
+  --mono:"IBM Plex Mono",monospace; --ui:"Space Grotesk",sans-serif; --serif:"Fraunces",serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.55;min-height:100vh}
+::selection{background:rgba(232,106,36,.35)}
+:focus-visible{outline:2.5px solid var(--solar-hot);outline-offset:2px;border-radius:6px}
+button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+[hidden]{display:none!important}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px clamp(18px,4vw,40px);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.mark{font-weight:700;letter-spacing:.22em;font-size:14px;text-transform:uppercase}
+.mark span{color:var(--solar-hot)}
+.mark small{display:block;font-family:var(--mono);font-weight:400;font-size:10.5px;letter-spacing:.08em;color:var(--ink-faint);text-transform:none;margin-top:2px}
+main{max-width:1200px;margin:0 auto;padding:28px clamp(18px,4vw,40px) 80px}
+
+.setup{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:26px}
+.setup .f{display:flex;flex-direction:column;gap:5px}
+.setup label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim)}
+.setup input{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 13px;min-width:280px;color:var(--ink)}
+.setup input:focus{outline:none;border-color:var(--solar-hot)}
+.btn{background:var(--solar-hot);border:none;color:#fff;font-weight:600;border-radius:999px;padding:11px 22px;cursor:pointer;transition:background .15s}
+.btn:hover{background:#c95515}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.ghost{background:transparent;border:1.5px solid var(--line);color:var(--solar)}
+.btn.ghost:hover{background:rgba(245,158,29,.08)}
+.status{font-family:var(--mono);font-size:12px;color:var(--ink-faint)}
+.status.err{color:var(--bad)}
+.status.ok{color:var(--good)}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:26px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.kpi b{display:block;font-family:var(--serif);font-weight:300;font-size:32px;color:var(--solar);line-height:1.1}
+.kpi span{font-size:12px;color:var(--ink-dim)}
+
+h2{font-family:var(--serif);font-weight:400;font-size:22px;margin:30px 0 12px;letter-spacing:-.01em}
+h2 em{color:var(--solar-hot);font-style:italic}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--card);border-radius:14px;overflow:hidden}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid rgba(245,158,29,.10)}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--solar);background:var(--card-2);white-space:nowrap}
+td{color:var(--ink-dim)}
+td.rep{color:var(--ink);font-weight:600}
+td.num{font-family:var(--mono);text-align:right}
+th.num{text-align:right}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(245,158,29,.04)}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600}
+.pill.yes{background:rgba(74,222,128,.15);color:var(--good)}
+.pill.no{background:rgba(255,138,122,.12);color:var(--bad)}
+
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0 12px}
+.controls select,.controls input{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;color:var(--ink);font-size:13.5px}
+.feed{background:var(--card);border:1px solid var(--line);border-radius:14px;max-height:520px;overflow-y:auto}
+.evt{display:grid;grid-template-columns:150px 130px 150px 1fr;gap:12px;padding:9px 16px;border-bottom:1px solid rgba(245,158,29,.08);font-size:12.5px;align-items:baseline}
+.evt:last-child{border-bottom:none}
+.evt .t{font-family:var(--mono);color:var(--ink-faint);font-size:11px;white-space:nowrap}
+.evt .r{font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.evt .e{font-family:var(--mono);color:var(--solar);font-size:11.5px}
+.evt .d{color:var(--ink-dim);word-break:break-word}
+@media(max-width:760px){.evt{grid-template-columns:1fr 1fr;row-gap:2px}}
+.bars{display:flex;gap:4px;align-items:flex-end;height:90px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px 10px;margin-bottom:6px}
+.bar{flex:1;background:linear-gradient(180deg,var(--solar),var(--solar-hot));border-radius:3px 3px 0 0;min-height:2px;position:relative}
+.bar small{position:absolute;top:100%;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:8.5px;color:var(--ink-faint);margin-top:3px;white-space:nowrap}
+.bars-wrap{margin-bottom:26px}
+.empty{padding:50px 20px;text-align:center;color:var(--ink-faint)}
+.funnel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
+.fn-row{display:grid;grid-template-columns:120px 1fr 60px 70px;gap:12px;align-items:center;font-size:13px}
+.fn-lbl{color:var(--ink-dim);font-weight:600}
+.fn-track{height:16px;background:rgba(245,158,29,.08);border-radius:8px;overflow:hidden}
+.fn-track i{display:block;height:100%;background:linear-gradient(90deg,var(--solar),var(--solar-hot));border-radius:8px}
+.fn-n{font-family:var(--mono);text-align:right;color:var(--ink)}
+.fn-conv{font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
+.rates{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin:6px 0 12px}
+.rates .f label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);display:block;margin-bottom:4px}
+.rates input{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;width:110px;color:var(--ink);font-family:var(--mono)}
+.pay-total{font-family:var(--mono);font-size:14px;color:var(--good);margin:10px 0 4px;font-weight:600}
+.note{font-size:12px;color:var(--ink-faint);margin-top:8px;line-height:1.5}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="mark">SUNBLOCK <span>STUDIO</span><small>owner console — private</small></div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <span class="status" id="lastLoad"></span>
+    <button class="btn ghost" id="refreshBtn" type="button" disabled>↻ Refresh</button>
+  </div>
+</header>
+
+<main>
+  <div class="setup">
+    <div class="f">
+      <label for="workerUrl">Worker URL</label>
+      <input type="url" id="workerUrl" placeholder="https://your-worker.workers.dev">
+    </div>
+    <div class="f">
+      <label for="adminKey">Admin key</label>
+      <input type="password" id="adminKey" placeholder="ADMIN_KEY secret" autocomplete="off">
+    </div>
+    <div class="f">
+      <label for="fromDate">From</label>
+      <input type="date" id="fromDate" style="min-width:150px">
+    </div>
+    <div class="f">
+      <label for="toDate">To</label>
+      <input type="date" id="toDate" style="min-width:150px">
+    </div>
+    <button class="btn" id="loadBtn" type="button">Load activity</button>
+    <span class="status" id="loadStatus"></span>
+  </div>
+
+  <div id="dash" hidden>
+    <div class="kpis" id="kpis"></div>
+
+    <div class="bars-wrap">
+      <h2>Activity — last 14 days <em>(all events)</em></h2>
+      <div class="bars" id="bars"></div>
+    </div>
+
+    <h2>The funnel <em>(selected period)</em></h2>
+    <div class="funnel" id="funnel"></div>
+
+    <h2>Per-rep <em>scoreboard</em></h2>
+    <div style="overflow-x:auto">
+      <table id="repTable">
+        <thead>
+          <tr>
+            <th>Rep</th><th>API key</th><th class="num">Sessions</th><th class="num">Dials</th><th class="num">Searches</th>
+            <th class="num">Good</th><th class="num">Previews</th><th class="num">Walks</th>
+            <th class="num">Sites</th><th class="num">Revs</th><th class="num">Published</th>
+            <th class="num">Proposals</th><th class="num">Won</th><th class="num">MRR added</th><th>Last active</th>
+          </tr>
+        </thead>
+        <tbody id="repBody"></tbody>
+      </table>
+    </div>
+
+    <h2>Closed <em>deals</em></h2>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>When</th><th>Rep</th><th>Business</th><th>Niche</th><th>Plan</th><th class="num">MRR</th></tr></thead>
+        <tbody id="dealBody"></tbody>
+      </table>
+    </div>
+
+    <h2>Payroll <em>(selected period)</em></h2>
+    <div class="rates">
+      <div class="f"><label for="rateLocal">Local close $</label><input type="number" id="rateLocal" min="0" step="1"></div>
+      <div class="f"><label for="rateGrowth">Growth close $</label><input type="number" id="rateGrowth" min="0" step="1"></div>
+      <div class="f"><label for="rateBuyout">Buyout close $</label><input type="number" id="rateBuyout" min="0" step="1"></div>
+      <div class="f"><label for="ratePrev">Per preview $</label><input type="number" id="ratePrev" min="0" step="1"></div>
+      <button class="btn ghost" id="saveRates" type="button">Save rates</button>
+      <button class="btn" id="payrollCsv" type="button">Export payroll CSV</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Rep</th><th class="num">Local</th><th class="num">Growth</th><th class="num">Buyout</th><th class="num">Previews</th><th class="num">Owed</th><th></th></tr></thead>
+        <tbody id="payBody"></tbody>
+      </table>
+    </div>
+    <p class="pay-total" id="payTotal"></p>
+    <h2>Payment <em>history</em></h2>
+    <div class="feed" id="payLog" style="max-height:220px;margin-bottom:6px"></div>
+    <p class="note">Rates and payment records are saved in this browser only. Set the date range to your pay period, check the Owed column, hit “Record payment” — the log below is your receipt trail.</p>
+
+    <h2>Published <em>sites</em></h2>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>When</th><th>Rep</th><th>Business</th><th>Niche</th><th>URL</th></tr></thead>
+        <tbody id="pubBody"></tbody>
+      </table>
+    </div>
+
+    <h2>Event <em>feed</em></h2>
+    <div class="controls">
+      <select id="repFilter"><option value="">All reps</option></select>
+      <select id="evtFilter"><option value="">All events</option></select>
+      <input type="text" id="textFilter" placeholder="Filter text…">
+    </div>
+    <div class="feed" id="feed"></div>
+    <p class="note">Events are retained on the Worker for 90 days. Screen views, searches, lead decisions, generations, revisions and publishes are logged per rep; API keys themselves are never transmitted or stored.</p>
+  </div>
+
+  <div class="empty" id="emptyDash">Enter your Worker URL and admin key, then hit <b>Load activity</b>.<br>Both are saved in this browser only.</div>
+</main>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const esc = s => String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const store = {
+  get(k){ try{return localStorage.getItem(k)}catch(e){return null} },
+  set(k,v){ try{localStorage.setItem(k,v)}catch(e){} },
+};
+let events = [];
+
+$("workerUrl").value = store.get("sbo_worker") || "";
+$("adminKey").value = store.get("sbo_key") || "";
+
+function fmtTime(t){
+  const d = new Date(t);
+  return d.toLocaleDateString(undefined,{month:"short",day:"numeric"}) + " " +
+         d.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"});
+}
+const money = n => "$" + (Math.round(n*100)/100).toLocaleString();
+
+function initRange(){
+  if (!$("fromDate").value){
+    const d = new Date(); d.setDate(d.getDate()-30);
+    $("fromDate").value = d.toISOString().slice(0,10);
+  }
+  if (!$("toDate").value) $("toDate").value = new Date().toISOString().slice(0,10);
+}
+function inRange(e){
+  const f = $("fromDate").value ? +new Date($("fromDate").value + "T00:00:00") : 0;
+  const t = $("toDate").value ? +new Date($("toDate").value + "T23:59:59") : Infinity;
+  return e.t >= f && e.t <= t;
+}
+
+async function load(){
+  const base = $("workerUrl").value.trim().replace(/\/+$/,"");
+  const key = $("adminKey").value.trim();
+  const st = $("loadStatus");
+  st.className = "status"; st.textContent = "";
+  if (!base || !key){ st.className = "status err"; st.textContent = "Need both the Worker URL and the admin key."; return; }
+  $("loadBtn").disabled = true; st.textContent = "Loading…";
+  try {
+    let res;
+    try { res = await fetch(base + "/events?key=" + encodeURIComponent(key)); }
+    catch(e){ throw new Error("Couldn't reach the Worker — check the URL."); }
+    let data = {};
+    try { data = await res.json(); } catch(e){}
+    if (res.status === 401) throw new Error("Admin key rejected.");
+    if (!res.ok) throw new Error(data.error || ("Worker returned HTTP " + res.status + "."));
+    events = data.events || [];
+    store.set("sbo_worker", base); store.set("sbo_key", key);
+    st.className = "status ok"; st.textContent = events.length + " events loaded";
+    $("lastLoad").textContent = "loaded " + new Date().toLocaleTimeString();
+    $("refreshBtn").disabled = false;
+    initRange();
+    render();
+  } catch(e){
+    st.className = "status err"; st.textContent = e.message;
+  } finally {
+    $("loadBtn").disabled = false;
+  }
+}
+$("loadBtn").addEventListener("click", load);
+$("refreshBtn").addEventListener("click", load);
+[$("workerUrl"),$("adminKey")].forEach(el => el.addEventListener("keydown", e => { if(e.key==="Enter") load(); }));
+[$("fromDate"),$("toDate")].forEach(el => el.addEventListener("change", () => { if(events.length) render(); }));
+
+/* ---- comp rates ---- */
+const DEFAULT_RATES = { local:149, growth:249, buyout:200, preview:0 };
+function getRates(){
+  try { return Object.assign({}, DEFAULT_RATES, JSON.parse(store.get("sbo_comp") || "{}")); }
+  catch(e){ return Object.assign({}, DEFAULT_RATES); }
+}
+function fillRates(){
+  const r = getRates();
+  $("rateLocal").value = r.local; $("rateGrowth").value = r.growth;
+  $("rateBuyout").value = r.buyout; $("ratePrev").value = r.preview;
+}
+$("saveRates").addEventListener("click", () => {
+  store.set("sbo_comp", JSON.stringify({
+    local: parseFloat($("rateLocal").value) || 0,
+    growth: parseFloat($("rateGrowth").value) || 0,
+    buyout: parseFloat($("rateBuyout").value) || 0,
+    preview: parseFloat($("ratePrev").value) || 0,
+  }));
+  render();
+});
+
+function getPayments(){
+  try { return JSON.parse(store.get("sbo_payments") || "[]"); } catch(e){ return []; }
+}
+
+const PLAN_NAMES = { local:"Local", growth:"Growth", buyout:"Buyout" };
+
+function aggregate(evR){
+  const reps = {};
+  const mk = () => ({ sessions:0, calls:0, searches:0, found:0, good:0, previews:0, walks:0,
+                      made:0, revs:0, pubs:0, props:0, wonL:0, wonG:0, wonB:0, mrr:0, key:false, last:0 });
+  // key + last-active come from ALL events, not just the range
+  events.forEach(e => {
+    const r = reps[e.rep || "(unnamed)"] ??= mk();
+    r.last = Math.max(r.last, e.t);
+    if (e.event === "key_connected" || (e.event === "session_start" && String(e.data.keyConnected) === "true")) r.key = true;
+  });
+  evR.forEach(e => {
+    const r = reps[e.rep || "(unnamed)"] ??= mk();
+    switch(e.event){
+      case "session_start": r.sessions++; break;
+      case "call_logged": r.calls++; break;
+      case "leads_search": r.searches++; r.found += parseInt(e.data.found)||0; break;
+      case "lead_good": r.good++; break;
+      case "preview_sent": r.previews++; break;
+      case "stage_change": if (e.data.to === "walkthrough") r.walks++; break;
+      case "site_generated": r.made++; break;
+      case "site_revised": r.revs++; break;
+      case "site_published": r.pubs++; break;
+      case "proposal_downloaded": case "proposal_composed": r.props++; break;
+      case "deal_closed": {
+        if (e.data.plan === "local") r.wonL++;
+        else if (e.data.plan === "growth") r.wonG++;
+        else if (e.data.plan === "buyout") r.wonB++;
+        r.mrr += parseInt(e.data.mrr) || 0;
+        break;
+      }
+    }
+  });
+  return reps;
+}
+
+function render(){
+  $("dash").hidden = false;
+  $("emptyDash").hidden = true;
+  fillRates();
+  const evR = events.filter(inRange);
+  const reps = aggregate(evR);
+  const names = Object.keys(reps);
+  const tot = f => names.reduce((s,n) => s + reps[n][f], 0);
+  const won = tot("wonL") + tot("wonG") + tot("wonB");
+
+  /* ---- KPIs ---- */
+  const k = [
+    [names.length, "reps seen"],
+    [tot("calls"), "dials logged"],
+    [tot("good"), "good leads"],
+    [tot("made"), "sites generated"],
+    [tot("pubs"), "sites published"],
+    [tot("props"), "proposals sent"],
+    [won, "deals won"],
+    [money(tot("mrr")) + "/mo", "MRR added"],
+  ];
+  $("kpis").innerHTML = k.map(([b,l]) => '<div class="kpi"><b>'+b+'</b><span>'+l+'</span></div>').join("");
+
+  /* ---- 14-day bars (all events) ---- */
+  const days = [];
+  for (let i=13;i>=0;i--){
+    const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-i);
+    days.push({ label: (d.getMonth()+1)+"/"+d.getDate(), start:+d, end:+d+86400000, n:0 });
+  }
+  events.forEach(e => { const day = days.find(x=>e.t>=x.start&&e.t<x.end); if(day) day.n++; });
+  const max = Math.max(1, ...days.map(d=>d.n));
+  $("bars").innerHTML = days.map(d =>
+    '<div class="bar" style="height:'+Math.max(2,Math.round(d.n/max*100))+'%" title="'+d.label+': '+d.n+' events"><small>'+d.label+'</small></div>'
+  ).join("");
+
+  /* ---- funnel ---- */
+  const fGood = tot("good"), fPrev = tot("previews"), fWalk = tot("walks");
+  const steps = [["Good leads", fGood], ["Previews sent", fPrev], ["Walkthroughs", fWalk], ["Closed won", won]];
+  const fmax = Math.max(1, ...steps.map(s=>s[1]));
+  $("funnel").innerHTML = steps.map((s,i) => {
+    const conv = i === 0 ? "" : (steps[i-1][1] ? Math.round(s[1]/steps[i-1][1]*100) + "% →" : "—");
+    return '<div class="fn-row"><span class="fn-lbl">'+s[0]+'</span>' +
+      '<span class="fn-track"><i style="width:'+Math.max(2, s[1]/fmax*100)+'%"></i></span>' +
+      '<b class="fn-n">'+s[1]+'</b><span class="fn-conv">'+conv+'</span></div>';
+  }).join("");
+
+  /* ---- rep table ---- */
+  $("repBody").innerHTML = names.sort((a,b)=>reps[b].last-reps[a].last).map(n => {
+    const r = reps[n];
+    const wonN = r.wonL + r.wonG + r.wonB;
+    return '<tr><td class="rep">'+esc(n)+'</td>'+
+      '<td>'+(r.key?'<span class="pill yes">connected</span>':'<span class="pill no">no key</span>')+'</td>'+
+      '<td class="num">'+r.sessions+'</td><td class="num">'+r.calls+'</td><td class="num">'+r.searches+'</td>'+
+      '<td class="num">'+r.good+'</td><td class="num">'+r.previews+'</td><td class="num">'+r.walks+'</td>'+
+      '<td class="num">'+r.made+'</td><td class="num">'+r.revs+'</td><td class="num">'+r.pubs+'</td>'+
+      '<td class="num">'+r.props+'</td><td class="num">'+wonN+'</td><td class="num">'+money(r.mrr)+'</td>'+
+      '<td>'+(r.last?fmtTime(r.last):"—")+'</td></tr>';
+  }).join("") || '<tr><td colspan="15" style="text-align:center;color:var(--ink-faint)">No activity in this period</td></tr>';
+
+  /* ---- closed deals ---- */
+  const dealsR = evR.filter(e => e.event === "deal_closed").sort((a,b)=>b.t-a.t);
+  $("dealBody").innerHTML = dealsR.map(e =>
+    '<tr><td>'+fmtTime(e.t)+'</td><td class="rep">'+esc(e.rep)+'</td><td>'+esc(e.data.business||"")+'</td>'+
+    '<td>'+esc(e.data.niche||"")+'</td><td>'+esc(PLAN_NAMES[e.data.plan]||e.data.plan||"")+'</td>'+
+    '<td class="num">'+money(parseInt(e.data.mrr)||0)+'/mo</td></tr>'
+  ).join("") || '<tr><td colspan="6" style="text-align:center;color:var(--ink-faint)">No closed deals in this period</td></tr>';
+
+  /* ---- published sites ---- */
+  const pubs = evR.filter(e=>e.event==="site_published").sort((a,b)=>b.t-a.t);
+  $("pubBody").innerHTML = pubs.map(e =>
+    '<tr><td>'+fmtTime(e.t)+'</td><td class="rep">'+esc(e.rep)+'</td><td>'+esc(e.data.business||"")+'</td>'+
+    '<td>'+esc(e.data.niche||"")+'</td><td><a href="'+esc(e.data.url||"#")+'" target="_blank" rel="noopener" style="color:var(--sky)">'+esc(e.data.url||"")+'</a></td></tr>'
+  ).join("") || '<tr><td colspan="5" style="text-align:center;color:var(--ink-faint)">Nothing published in this period</td></tr>';
+
+  /* ---- payroll ---- */
+  const rates = getRates();
+  const payRows = names.filter(n => reps[n].wonL+reps[n].wonG+reps[n].wonB+reps[n].previews > 0 || reps[n].calls > 0);
+  window._payroll = payRows.map(n => {
+    const r = reps[n];
+    const owed = r.wonL*rates.local + r.wonG*rates.growth + r.wonB*rates.buyout + r.previews*rates.preview;
+    return { rep:n, local:r.wonL, growth:r.wonG, buyout:r.wonB, previews:r.previews, owed };
+  }).sort((a,b)=>b.owed-a.owed);
+  const totOwed = window._payroll.reduce((s,p)=>s+p.owed,0);
+  $("payBody").innerHTML = window._payroll.map((p,i) =>
+    '<tr><td class="rep">'+esc(p.rep)+'</td><td class="num">'+p.local+'</td><td class="num">'+p.growth+'</td>'+
+    '<td class="num">'+p.buyout+'</td><td class="num">'+p.previews+'</td><td class="num" style="color:var(--good);font-weight:700">'+money(p.owed)+'</td>'+
+    '<td><button class="btn ghost" style="padding:6px 14px;font-size:12px" data-pay="'+i+'">✓ Record payment</button></td></tr>'
+  ).join("") || '<tr><td colspan="7" style="text-align:center;color:var(--ink-faint)">No payable activity in this period</td></tr>';
+  $("payTotal").textContent = "Total owed this period: " + money(totOwed);
+
+  /* ---- payment history ---- */
+  const pays = getPayments().slice().reverse();
+  $("payLog").innerHTML = pays.map(p =>
+    '<div class="evt"><span class="t">'+fmtTime(p.when)+'</span><span class="r">'+esc(p.rep)+'</span>'+
+    '<span class="e">paid</span><span class="d">'+money(p.amount)+' · period '+esc(p.label)+'</span></div>'
+  ).join("") || '<div class="empty" style="padding:24px">No payments recorded yet. Recording a payment saves it in this browser as your log.</div>';
+
+  /* ---- feed filters ---- */
+  const repSel = $("repFilter"), evtSel = $("evtFilter");
+  const keepRep = repSel.value, keepEvt = evtSel.value;
+  repSel.innerHTML = '<option value="">All reps</option>' + names.map(n=>'<option'+(n===keepRep?' selected':'')+'>'+esc(n)+'</option>').join("");
+  const evtTypes = [...new Set(events.map(e=>e.event))].sort();
+  evtSel.innerHTML = '<option value="">All events</option>' + evtTypes.map(t=>'<option'+(t===keepEvt?' selected':'')+'>'+esc(t)+'</option>').join("");
+  renderFeed();
+}
+
+$("payBody").addEventListener("click", e => {
+  const b = e.target.closest("[data-pay]"); if (!b) return;
+  const p = (window._payroll || [])[parseInt(b.dataset.pay)];
+  if (!p) return;
+  const pays = getPayments();
+  pays.push({ rep: p.rep, amount: p.owed, label: $("fromDate").value + " → " + $("toDate").value, when: Date.now() });
+  store.set("sbo_payments", JSON.stringify(pays));
+  render();
+});
+
+$("payrollCsv").addEventListener("click", () => {
+  const rows = window._payroll || [];
+  if (!rows.length) return;
+  const head = "Rep,Local closes,Growth closes,Buyout closes,Previews,Commission owed,Period\n";
+  const body = rows.map(p => [p.rep, p.local, p.growth, p.buyout, p.previews, p.owed.toFixed(2),
+    $("fromDate").value + " to " + $("toDate").value].map(v => /[",]/.test(String(v)) ? '"'+String(v).replace(/"/g,'""')+'"' : v).join(",")).join("\n");
+  const blob = new Blob(["﻿" + head + body + "\n"], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "sunblock-payroll-" + $("fromDate").value + "-to-" + $("toDate").value + ".csv";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1500);
+});
+
+function renderFeed(){
+  const rep = $("repFilter").value, ev = $("evtFilter").value, q = $("textFilter").value.trim().toLowerCase();
+  const rows = events.filter(e =>
+    inRange(e) && (!rep || e.rep === rep) && (!ev || e.event === ev) &&
+    (!q || JSON.stringify(e).toLowerCase().includes(q))
+  ).slice(0, 400);
+  $("feed").innerHTML = rows.map(e => {
+    const d = Object.entries(e.data||{}).map(([k,v]) => k+": "+(Array.isArray(v)?v.join(", "):v)).join(" · ");
+    return '<div class="evt"><span class="t">'+fmtTime(e.t)+'</span><span class="r">'+esc(e.rep)+'</span><span class="e">'+esc(e.event)+'</span><span class="d">'+esc(d)+'</span></div>';
+  }).join("") || '<div class="empty">Nothing matches those filters.</div>';
+}
+["repFilter","evtFilter"].forEach(id => $(id).addEventListener("change", renderFeed));
+$("textFilter").addEventListener("input", renderFeed);
+initRange();
+</script>
+</body>
+</html>
